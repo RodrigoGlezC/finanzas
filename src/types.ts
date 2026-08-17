@@ -13,6 +13,8 @@ export interface Movement {
   recurringId?: string
   period?: string
   goalId?: string
+  transfer?: boolean
+  transferId?: string
   _c: number
 }
 

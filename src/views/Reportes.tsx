@@ -15,7 +15,7 @@ export default function Reportes() {
   const dIn = prev.in ? ((cur.in - prev.in) / prev.in) * 100 : 0
   const dOut = prev.out ? ((cur.out - prev.out) / prev.out) * 100 : 0
 
-  const ym = data.movements.filter((m) => +m.date.slice(0, 4) === year)
+  const ym = data.movements.filter((m) => +m.date.slice(0, 4) === year && !m.transfer)
   const tin = ym.filter((m) => m.type === 'in').reduce((a, b) => a + b.amount, 0)
   const tout = ym.filter((m) => m.type === 'out').reduce((a, b) => a + b.amount, 0)
   const tsave = ym.filter((m) => m.type === 'out' && catGroup(data, m.category) === 'Ahorros').reduce((a, b) => a + b.amount, 0)

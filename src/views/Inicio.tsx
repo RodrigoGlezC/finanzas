@@ -1,12 +1,14 @@
 import { useStore } from '../store'
 import { getPeriod } from '../lib/period'
-import { accBalance, catGroup, spentByCatMonth } from '../lib/calc'
+import { accBalance, budgetAlerts, budgetSummary, catGroup, spentByCatMonth } from '../lib/calc'
 import { upcomingList } from '../lib/recurring'
 import { ACC_ICON, iconFor } from '../lib/constants'
-import { cap, colorForName, cssVar, money } from '../lib/format'
+import { cap, colorForName, cssVar, money, monthKey, mondayOf, ymd } from '../lib/format'
+import { uid } from '../lib/storage'
 import { IconSquare, MiniEmpty } from '../components/ui'
 import BudgetRow from '../components/BudgetRow'
 import Donut from '../charts/Donut'
+import type { Recurring } from '../types'
 
 export default function Inicio() {
   const data = useStore((s) => s.data)
@@ -14,14 +16,28 @@ export default function Inicio() {
   const periodMode = useStore((s) => s.periodMode)
   const setView = useStore((s) => s.setView)
   const openSheet = useStore((s) => s.openSheet)
+  const commit = useStore((s) => s.commit)
+  const showToast = useStore((s) => s.showToast)
 
   const anchor = new Date(anchorMs)
   const P = getPeriod(anchor, periodMode)
-  const mv = data.movements.filter((m) => P.inRange(m.date))
+  const mv = data.movements.filter((m) => P.inRange(m.date) && !m.transfer)
   const ingresos = mv.filter((m) => m.type === 'in').reduce((a, b) => a + b.amount, 0)
   const gastos = mv.filter((m) => m.type === 'out').reduce((a, b) => a + b.amount, 0)
   const ahorro = mv.filter((m) => m.type === 'out' && catGroup(data, m.category) === 'Ahorros').reduce((a, b) => a + b.amount, 0)
   const balance = ingresos - gastos
+
+  const avail = budgetSummary(data, anchor)
+  const alerts = budgetAlerts(data, anchor)
+
+  function pagar(r: Recurring, date: Date) {
+    const key = r.freq === 'mensual' ? monthKey(date) : 'W' + ymd(mondayOf(date))
+    if (data.movements.some((m) => m.recurringId === r.id && m.period === key)) { showToast('Ese pago ya está registrado'); return }
+    commit((st) => {
+      st.movements.push({ id: uid('m_'), type: r.type, amount: r.amount, category: r.category, date: ymd(date), note: r.note || '', accountId: r.accountId, recurringId: r.id, period: key, _c: Date.now() })
+    })
+    showToast('Pago registrado ✓')
+  }
 
   // ratio bar
   const base = Math.max(ingresos, gastos, 1)
@@ -68,7 +84,32 @@ export default function Inicio() {
         </div>
       </div>
 
-      <div className="section-title">Cuentas</div>
+      {alerts.length > 0 && (
+        <div className="card" style={{ marginTop: 14 }}>
+          {alerts.map((a, i) => (
+            <div className="alert" key={i}>
+              <span className="al-ic">{a.level === 'over' ? '🔴' : '🟠'}</span>
+              <div style={{ flex: 1 }}>{a.text}</div>
+            </div>
+          ))}
+        </div>
+      )}
+
+      {avail.hasBudgets && (
+        <>
+          <div className="section-title">Disponible para gastar</div>
+          <div className="avail-card">
+            <IconSquare emoji="💸" color={cssVar(avail.remaining >= 0 ? '--green' : '--red')} />
+            <div className="av-main">
+              <div className="av-lab">Te queda del presupuesto de {cap(anchor.toLocaleDateString('es-MX', { month: 'long' }))}</div>
+              <div className="av-val tnum" style={{ color: avail.remaining >= 0 ? 'var(--label)' : 'var(--red-ink)' }}>{money(avail.remaining)}</div>
+              <div className="av-day">{avail.remaining > 0 ? `~${money(avail.perDay)} por día los próximos ${avail.daysLeft} días` : 'Ya no queda presupuesto este mes'}</div>
+            </div>
+          </div>
+        </>
+      )}
+
+      <div className="section-title">Cuentas {data.accounts.length >= 1 && <button className="act" onClick={() => openSheet({ kind: 'transfer' })}>Transferir</button>}</div>
       <div className="card">
         {data.accounts.map((a) => {
           const bal = accBalance(data, a.id)
@@ -96,8 +137,8 @@ export default function Inicio() {
               return (
                 <div className="row" key={i}>
                   <IconSquare emoji={iconFor(r.category, r.type)} color={col} />
-                  <div className="r-main"><div className="r-title">{r.category}</div><div className="r-sub">Vence {dd}</div></div>
-                  <div className="r-amt tnum">{money(r.amount)}</div>
+                  <div className="r-main"><div className="r-title">{r.category}</div><div className="r-sub">Vence {dd} · {money(r.amount)}</div></div>
+                  <button className="pill-btn" onClick={() => pagar(r, date)}>{r.type === 'in' ? 'Registrar' : 'Pagar'}</button>
                 </div>
               )
             })}

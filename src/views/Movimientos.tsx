@@ -3,7 +3,11 @@ import { getPeriod } from '../lib/period'
 import { accName } from '../lib/calc'
 import { ACC_ICON, iconFor } from '../lib/constants'
 import { colorForName, cssVar, money, parseD } from '../lib/format'
+import { uid } from '../lib/storage'
 import { IconSquare } from '../components/ui'
+import type { Movement } from '../types'
+
+type Row = { kind: 'mov'; m: Movement } | { kind: 'transfer'; id: string; out: Movement; inMov: Movement }
 
 export default function Movimientos() {
   const data = useStore((s) => s.data)
@@ -20,16 +24,37 @@ export default function Movimientos() {
   const showToast = useStore((s) => s.showToast)
 
   const P = getPeriod(new Date(anchorMs), periodMode)
-  let rows = data.movements.filter((m) => P.inRange(m.date)).slice()
-    .sort((a, b) => b.date.localeCompare(a.date) || b._c - a._c)
-  if (filterMode !== 'all') rows = rows.filter((m) => m.type === filterMode)
-  if (accFilter !== 'all') rows = rows.filter((m) => m.accountId === accFilter)
-  if (search) {
-    const q = search.toLowerCase()
-    rows = rows.filter((m) => (m.category + ' ' + (m.note || '')).toLowerCase().includes(q))
-  }
+  const q = search.toLowerCase()
+  const globalSearch = search.trim().length > 0
+  const source = globalSearch ? data.movements : data.movements.filter((m) => P.inRange(m.date))
+  const matchSearch = (m: Movement) => !globalSearch || (m.category + ' ' + (m.note || '')).toLowerCase().includes(q)
 
-  function del(id: string) {
+  let rows: Row[] = []
+  if (filterMode === 'in' || filterMode === 'out') {
+    rows = source
+      .filter((m) => !m.transfer && m.type === filterMode && (accFilter === 'all' || m.accountId === accFilter) && matchSearch(m))
+      .map((m) => ({ kind: 'mov', m }))
+  } else {
+    const seen = new Set<string>()
+    for (const m of source) {
+      if (m.transfer) {
+        if (m.transferId && !seen.has(m.transferId)) {
+          seen.add(m.transferId)
+          const out = data.movements.find((x) => x.transferId === m.transferId && x.type === 'out')
+          const inMov = data.movements.find((x) => x.transferId === m.transferId && x.type === 'in')
+          if (out && inMov && (accFilter === 'all' || out.accountId === accFilter || inMov.accountId === accFilter) && matchSearch(out)) {
+            rows.push({ kind: 'transfer', id: m.transferId, out, inMov })
+          }
+        }
+      } else if ((accFilter === 'all' || m.accountId === accFilter) && matchSearch(m)) {
+        rows.push({ kind: 'mov', m })
+      }
+    }
+  }
+  const sortKey = (r: Row) => (r.kind === 'mov' ? r.m : r.out)
+  rows.sort((a, b) => { const A = sortKey(a), B = sortKey(b); return B.date.localeCompare(A.date) || B._c - A._c })
+
+  function delMov(id: string) {
     const m = data.movements.find((x) => x.id === id)
     if (!m) return
     const isRec = !!m.recurringId
@@ -45,15 +70,27 @@ export default function Movimientos() {
       }
       st.movements = st.movements.filter((x) => x.id !== id)
     })
-    showToast('Movimiento eliminado', () => {
-      commit((st) => {
-        st.movements.push(removed)
-        if (isRec) {
-          const r = st.recurring.find((x) => x.id === removed.recurringId)
-          if (r && r.skip) r.skip = r.skip.filter((p) => p !== removed.period)
-        }
-      })
-    })
+    showToast('Movimiento eliminado', () => commit((st) => {
+      st.movements.push(removed)
+      if (isRec) { const r = st.recurring.find((x) => x.id === removed.recurringId); if (r && r.skip) r.skip = r.skip.filter((p) => p !== removed.period) }
+    }))
+  }
+
+  function delTransfer(tid: string) {
+    if (!confirm('¿Eliminar esta transferencia?')) return
+    const pair = data.movements.filter((m) => m.transferId === tid)
+    commit((st) => { st.movements = st.movements.filter((m) => m.transferId !== tid) })
+    showToast('Transferencia eliminada', () => commit((st) => { st.movements.push(...pair) }))
+  }
+
+  function repetirUltimo() {
+    const last = data.movements.filter((m) => !m.transfer).sort((a, b) => b._c - a._c)[0]
+    if (!last) { showToast('No hay movimiento que repetir'); return }
+    const today = new Date()
+    const date = `${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2, '0')}-${String(today.getDate()).padStart(2, '0')}`
+    let newId = ''
+    commit((st) => { newId = uid('m_'); st.movements.push({ ...last, id: newId, date, _c: Date.now(), recurringId: undefined, period: undefined }) })
+    showToast(`Repetido: ${last.category} ${money(last.amount)}`, () => commit((st) => { st.movements = st.movements.filter((m) => m.id !== newId) }))
   }
 
   return (
@@ -66,19 +103,21 @@ export default function Movimientos() {
         </div>
         <div className="searchbar">
           <span className="si">🔍</span>
-          <input placeholder="Buscar" value={search} onChange={(e) => setSearch(e.target.value)} />
+          <input placeholder="Buscar en todo tu historial" value={search} onChange={(e) => setSearch(e.target.value)} />
         </div>
         <div className="chips">
           <button className={`chip ${accFilter === 'all' ? 'on' : ''}`} onClick={() => setAccFilter('all')}>Todas</button>
           {data.accounts.map((a) => (
-            <button key={a.id} className={`chip ${accFilter === a.id ? 'on' : ''}`} onClick={() => setAccFilter(a.id)}>
-              {ACC_ICON[a.type] || ''} {a.name}
-            </button>
+            <button key={a.id} className={`chip ${accFilter === a.id ? 'on' : ''}`} onClick={() => setAccFilter(a.id)}>{ACC_ICON[a.type] || ''} {a.name}</button>
           ))}
         </div>
       </div>
 
-      <div className="section-title" style={{ marginTop: 14 }}>{rows.length} {rows.length === 1 ? 'movimiento' : 'movimientos'}</div>
+      <div className="section-title" style={{ marginTop: 14 }}>
+        <span>{globalSearch ? `${rows.length} en tu historial` : `${rows.length} ${rows.length === 1 ? 'movimiento' : 'movimientos'}`}</span>
+        {data.movements.some((m) => !m.transfer) && <button className="act" onClick={repetirUltimo}>Repetir último</button>}
+      </div>
+
       <div className="card">
         {data.movements.length === 0 ? (
           <div className="empty">
@@ -88,8 +127,22 @@ export default function Movimientos() {
             <button className="btn-fill" onClick={() => openSheet({ kind: 'movement' })}>Agregar movimiento</button>
           </div>
         ) : rows.length === 0 ? (
-          <div className="empty"><div className="e-ic">🔍</div><div className="e-s" style={{ margin: 0 }}>No hay movimientos con este filtro.</div></div>
-        ) : rows.map((m) => {
+          <div className="empty"><div className="e-ic">🔍</div><div className="e-s" style={{ margin: 0 }}>Sin resultados.</div></div>
+        ) : rows.map((r) => {
+          if (r.kind === 'transfer') {
+            const dt = parseD(r.out.date).toLocaleDateString('es-MX', { day: 'numeric', month: 'short' })
+            return (
+              <div className="row" key={r.id}>
+                <IconSquare emoji="🔄" color={cssVar('--s1')} />
+                <div className="r-main"><div className="r-title">Transferencia</div><div className="r-sub">{accName(data, r.out.accountId)} → {accName(data, r.inMov.accountId)} · {dt}</div></div>
+                <div className="r-trail">
+                  <span className="r-amt tnum" style={{ color: 'var(--label-2)' }}>{money(r.out.amount, true)}</span>
+                  <button className="del" onClick={() => delTransfer(r.id)}>✕</button>
+                </div>
+              </div>
+            )
+          }
+          const m = r.m
           const col = m.type === 'in' ? cssVar('--green') : colorForName(m.category)
           const dt = parseD(m.date).toLocaleDateString('es-MX', { day: 'numeric', month: 'short' })
           const rec = m.recurringId ? ' · 🔁' : ''
@@ -100,7 +153,7 @@ export default function Movimientos() {
               <div className="r-main"><div className="r-title">{m.category}</div><div className="r-sub">{sub}</div></div>
               <div className="r-trail">
                 <span className={`r-amt ${m.type === 'in' ? 'in' : ''} tnum`}>{m.type === 'in' ? '+' : '−'}{money(m.amount, true)}</span>
-                <button className="del" onClick={(e) => { e.stopPropagation(); del(m.id) }}>✕</button>
+                <button className="del" onClick={(e) => { e.stopPropagation(); delMov(m.id) }}>✕</button>
               </div>
             </div>
           )

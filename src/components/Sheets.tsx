@@ -7,6 +7,7 @@ import AporteSheet from '../sheets/AporteSheet'
 import RecurringSheet from '../sheets/RecurringSheet'
 import CategorySheet from '../sheets/CategorySheet'
 import ReassignSheet from '../sheets/ReassignSheet'
+import TransferSheet from '../sheets/TransferSheet'
 
 export default function Sheets() {
   const sheet = useStore((s) => s.sheet)
@@ -18,6 +19,7 @@ export default function Sheets() {
     case 'goal': return <GoalSheet id={sheet.id} />
     case 'aporte': return <AporteSheet goalId={sheet.goalId} />
     case 'recurring': return <RecurringSheet id={sheet.id} />
+    case 'transfer': return <TransferSheet />
     case 'category': return <CategorySheet />
     case 'reassignAccount': return <ReassignSheet target={sheet} />
     case 'reassignCategory': return <ReassignSheet target={sheet} />
