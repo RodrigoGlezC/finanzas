@@ -1,5 +1,11 @@
 import type { Category, MovType } from '../types'
 
+export const CATEGORY_ICONS = [
+  '🛒', '🏠', '🚌', '🚗', '⛽', '🧺', '💡', '📱', '📶', '🛍️', '👕', '👟', '💊', '🩺', '🏥',
+  '🎧', '☁️', '✨', '🐷', '🏦', '💵', '💳', '➕', '🍔', '🍕', '☕', '🍺', '🎬', '🎮', '📚',
+  '✈️', '🏖️', '🎁', '🐶', '🐱', '💇', '🏋️', '⚽', '🎵', '🧾', '💼', '🔧', '🌱', '❤️', '⭐',
+] as const
+
 export const STORE_KEY = 'micontrolgastos_v1'
 export const THEME_KEY = 'mcg_theme'
 export const LAST_BACKUP_KEY = 'mcg_lastBackup'
@@ -47,6 +53,7 @@ export const ACC_ICON: Record<string, string> = {
 
 export const WEEKDAYS = ['lunes', 'martes', 'miércoles', 'jueves', 'viernes', 'sábado', 'domingo']
 
-export function iconFor(cat: string, type: MovType): string {
-  return ICONS[cat] || (type === 'in' ? '💰' : '💳')
+export function iconFor(cat: string, type: MovType, cats?: Category[]): string {
+  const custom = cats?.find((c) => c.name === cat)?.icon
+  return custom || ICONS[cat] || (type === 'in' ? '💰' : '💳')
 }

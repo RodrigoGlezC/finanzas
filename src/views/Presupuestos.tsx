@@ -38,7 +38,7 @@ export default function Presupuestos() {
           ) : (
             <div className="card">
               <div className="card-h"><h3>Total presupuestado</h3><span className="sub">{money(totS)} de {money(totL)}</span></div>
-              {rows.map((r) => <BudgetRow key={r.c} cat={r.c} limit={r.limit} spent={r.spent} onClick={() => openSheet({ kind: 'budget', cat: r.c })} />)}
+              {rows.map((r) => <BudgetRow key={r.c} cat={r.c} limit={r.limit} spent={r.spent} cats={data.cats} onClick={() => openSheet({ kind: 'budget', cat: r.c })} />)}
             </div>
           )}
         </>

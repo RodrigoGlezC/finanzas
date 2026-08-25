@@ -16,7 +16,7 @@ export type SheetState =
   | { kind: 'aporte'; goalId: string }
   | { kind: 'recurring'; id?: string }
   | { kind: 'transfer' }
-  | { kind: 'category' }
+  | { kind: 'category'; name?: string }
   | { kind: 'reassignAccount'; id: string }
   | { kind: 'reassignCategory'; name: string }
 

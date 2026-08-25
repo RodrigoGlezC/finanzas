@@ -1,15 +1,16 @@
 import { colorForName, cssVar, money, tint } from '../lib/format'
 import { iconFor } from '../lib/constants'
+import type { Category } from '../types'
 
-export default function BudgetRow({ cat, limit, spent, onClick }: {
-  cat: string; limit: number; spent: number; onClick?: () => void
+export default function BudgetRow({ cat, limit, spent, onClick, cats }: {
+  cat: string; limit: number; spent: number; onClick?: () => void; cats?: Category[]
 }) {
   const pct = limit > 0 ? (spent / limit) * 100 : 0
   const st = pct > 100 ? 'over' : pct >= 80 ? 'warn' : 'ok'
   const col = st === 'over' ? cssVar('--red') : st === 'warn' ? cssVar('--orange') : cssVar('--green')
   return (
     <div className="catrow" style={{ cursor: onClick ? 'pointer' : undefined }} onClick={onClick}>
-      <span className="ic" style={{ background: tint(colorForName(cat), 15) }}>{iconFor(cat, 'out')}</span>
+      <span className="ic" style={{ background: tint(colorForName(cat), 15) }}>{iconFor(cat, 'out', cats)}</span>
       <div className="cbody">
         <div className="cline">
           <span className="cname">{cat}</span>

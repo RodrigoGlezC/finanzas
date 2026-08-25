@@ -136,7 +136,7 @@ export default function Inicio() {
               const dd = date.toLocaleDateString('es-MX', { day: 'numeric', month: 'short' })
               return (
                 <div className="row" key={i}>
-                  <IconSquare emoji={iconFor(r.category, r.type)} color={col} />
+                  <IconSquare emoji={iconFor(r.category, r.type, data.cats)} color={col} />
                   <div className="r-main"><div className="r-title">{r.category}</div><div className="r-sub">Vence {dd} · {money(r.amount)}</div></div>
                   <button className="pill-btn" onClick={() => pagar(r, date)}>{r.type === 'in' ? 'Registrar' : 'Pagar'}</button>
                 </div>
@@ -153,7 +153,7 @@ export default function Inicio() {
             <span className="ic" style={{ background: 'var(--fill)' }}>🎯</span>
             <div className="r-main"><div className="r-title" style={{ color: 'var(--tint)' }}>Crear un presupuesto</div><div className="r-sub">Define límites y recibe alertas</div></div>
           </div>
-        ) : miniBudgets.map((b) => <BudgetRow key={b.c} cat={b.c} limit={b.limit} spent={b.spent} />)}
+        ) : miniBudgets.map((b) => <BudgetRow key={b.c} cat={b.c} limit={b.limit} spent={b.spent} cats={data.cats} />)}
       </div>
 
       <div className="section-title">Gastos por categoría</div>
@@ -164,7 +164,7 @@ export default function Inicio() {
           const share = Math.round((val / catTotal) * 100)
           return (
             <div className="catrow" key={name}>
-              <IconSquare emoji={iconFor(name, 'out')} color={col} />
+              <IconSquare emoji={iconFor(name, 'out', data.cats)} color={col} />
               <div className="cbody">
                 <div className="cline"><span className="cname">{name}</span><span className="cval tnum">{money(val)}<small>{share}%</small></span></div>
                 <div className="track"><span style={{ width: pct + '%', background: col }} /></div>

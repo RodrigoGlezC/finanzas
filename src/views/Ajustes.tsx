@@ -13,21 +13,7 @@ export default function Ajustes() {
   const session = useStore((s) => s.session)
   const cloudStatus = useStore((s) => s.cloudStatus)
   const openSheet = useStore((s) => s.openSheet)
-  const commit = useStore((s) => s.commit)
-  const showToast = useStore((s) => s.showToast)
   const fileRef = useRef<HTMLInputElement>(null)
-
-  function delCat(name: string) {
-    const count = data.movements.filter((m) => m.category === name).length + data.recurring.filter((r) => r.category === name).length
-    if (count === 0) {
-      if (confirm(`¿Eliminar la categoría "${name}"?`)) {
-        commit((st) => { if (st.budgets[name]) delete st.budgets[name]; st.cats = st.cats.filter((c) => c.name !== name) })
-        showToast('Categoría eliminada')
-      }
-      return
-    }
-    openSheet({ kind: 'reassignCategory', name })
-  }
 
   async function logout() {
     try { await supabase?.auth.signOut() } catch { /* ignore */ }
@@ -53,7 +39,7 @@ export default function Ajustes() {
           const freq = r.freq === 'mensual' ? `Día ${r.day} de cada mes` : `Cada ${WEEKDAYS[(r.day || 1) - 1]}`
           return (
             <div className="row tappable" key={r.id} onClick={() => openSheet({ kind: 'recurring', id: r.id })}>
-              <IconSquare emoji={iconFor(r.category, r.type)} color={col} />
+              <IconSquare emoji={iconFor(r.category, r.type, data.cats)} color={col} />
               <div className="r-main"><div className="r-title">{r.category} {r.active === false ? '· ⏸️' : ''}</div><div className="r-sub">{freq} · {accName(data, r.accountId)}</div></div>
               <div className="r-trail"><span className="r-amt tnum">{money(r.amount)}</span><span className="chev">›</span></div>
             </div>
@@ -78,12 +64,12 @@ export default function Ajustes() {
           <div key={g}>
             <div className="glabel" style={{ padding: '12px 16px 4px' }}>{g}</div>
             {catsByGroup[g].map((c) => (
-              <div className="row" key={c.name}>
-                <IconSquare emoji={iconFor(c.name, g === 'Ingresos' ? 'in' : 'out')} color={g === 'Ingresos' ? cssVar('--green') : colorForName(c.name)} />
+              <div className="row tappable" key={c.name} onClick={() => openSheet({ kind: 'category', name: c.name })}>
+                <IconSquare emoji={iconFor(c.name, g === 'Ingresos' ? 'in' : 'out', data.cats)} color={g === 'Ingresos' ? cssVar('--green') : colorForName(c.name)} />
                 <div className="r-main"><div className="r-title">{c.name}</div></div>
                 <div className="r-trail">
                   {usedCats.has(c.name) && <span className="r-sub">en uso</span>}
-                  <button className="del" style={{ color: 'var(--red)' }} onClick={() => delCat(c.name)}>✕</button>
+                  <span className="chev">›</span>
                 </div>
               </div>
             ))}

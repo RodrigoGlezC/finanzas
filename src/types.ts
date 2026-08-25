@@ -21,6 +21,7 @@ export interface Movement {
 export interface Category {
   name: string
   group: string
+  icon?: string
 }
 
 export interface Account {

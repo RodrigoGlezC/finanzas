@@ -67,7 +67,7 @@ export default function MovementSheet({ id }: { id?: string }) {
       <div className="catchips">
         {cats.map((c) => (
           <button key={c.name} className={`catchip ${catValue === c.name ? 'on' : ''}`} onClick={() => setCategory(c.name)}>
-            <span className="ci">{iconFor(c.name, type)}</span>{c.name}
+            <span className="ci">{iconFor(c.name, type, data.cats)}</span>{c.name}
           </button>
         ))}
       </div>

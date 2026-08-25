@@ -149,7 +149,7 @@ export default function Movimientos() {
           const sub = (m.note ? m.note + ' · ' : '') + dt + ' · ' + accName(data, m.accountId) + rec
           return (
             <div className="row tappable" key={m.id} onClick={() => openSheet({ kind: 'movement', id: m.id })}>
-              <IconSquare emoji={iconFor(m.category, m.type)} color={col} />
+              <IconSquare emoji={iconFor(m.category, m.type, data.cats)} color={col} />
               <div className="r-main"><div className="r-title">{m.category}</div><div className="r-sub">{sub}</div></div>
               <div className="r-trail">
                 <span className={`r-amt ${m.type === 'in' ? 'in' : ''} tnum`}>{m.type === 'in' ? '+' : '−'}{money(m.amount, true)}</span>

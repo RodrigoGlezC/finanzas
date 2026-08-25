@@ -20,7 +20,7 @@ export default function Sheets() {
     case 'aporte': return <AporteSheet goalId={sheet.goalId} />
     case 'recurring': return <RecurringSheet id={sheet.id} />
     case 'transfer': return <TransferSheet />
-    case 'category': return <CategorySheet />
+    case 'category': return <CategorySheet name={sheet.name} />
     case 'reassignAccount': return <ReassignSheet target={sheet} />
     case 'reassignCategory': return <ReassignSheet target={sheet} />
     default: return null
