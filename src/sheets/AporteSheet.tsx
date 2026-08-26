@@ -20,8 +20,15 @@ export default function AporteSheet({ goalId }: { goalId: string }) {
   function save() {
     const amt = parseFloat(amount.replace(/[^0-9.]/g, ''))
     if (!(amt > 0)) { showToast('Monto inválido'); return }
-    const cat = data.cats.some((c) => c.name === 'Ahorro') ? 'Ahorro' : (data.cats.find((c) => c.group === 'Ahorros')?.name || 'Ahorro')
+    // Categoría donde se registra el aporte: reutiliza "Ahorro" o la primera del grupo Ahorros.
+    // Si el usuario no tiene ninguna (arranca sin categorías), se crea una para no dejar el movimiento huérfano.
+    const existing = data.cats.find((c) => c.name === 'Ahorro') || data.cats.find((c) => c.group === 'Ahorros')
+    const cat = existing?.name || 'Ahorro'
     commit((st) => {
+      if (!st.cats.some((c) => c.name === cat)) {
+        if (!st.groups.includes('Ahorros')) st.groups.splice(Math.max(0, st.groups.length - 1), 0, 'Ahorros')
+        st.cats.push({ name: cat, group: 'Ahorros', icon: '🐷' })
+      }
       st.movements.push({ id: uid('m_'), type: 'out', amount: amt, category: cat, date, note: 'Meta: ' + goal!.name, accountId, goalId: goal!.id, _c: Date.now() })
     })
     showToast('Aporte registrado ✓'); closeSheet()

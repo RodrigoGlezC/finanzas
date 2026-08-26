@@ -45,6 +45,11 @@ export default function Presupuestos() {
       ) : (
         <>
           <div className="section-title">Metas de ahorro <button className="act" onClick={() => openSheet({ kind: 'goal' })}>+ Nueva meta</button></div>
+          {data.goals.length > 0 && (
+            <div className="hint" style={{ padding: '0 4px 12px', marginTop: -2 }}>
+              Una meta es solo un objetivo. Cada aporte se guarda como un movimiento de ahorro, así que también suma a tu ahorro del mes — no se cuenta dos veces.
+            </div>
+          )}
           {data.goals.length === 0 ? (
             <div className="card"><div className="empty">
               <div className="e-ic">🎯</div><div className="e-t">Sin metas todavía</div>
