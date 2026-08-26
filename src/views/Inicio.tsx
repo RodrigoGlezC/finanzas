@@ -14,6 +14,7 @@ export default function Inicio() {
   const anchorMs = useStore((s) => s.anchor)
   const periodMode = useStore((s) => s.periodMode)
   const setView = useStore((s) => s.setView)
+  const setFilter = useStore((s) => s.setFilter)
   const openSheet = useStore((s) => s.openSheet)
   const commit = useStore((s) => s.commit)
   const showToast = useStore((s) => s.showToast)
@@ -149,9 +150,9 @@ export default function Inicio() {
         ) : miniBudgets.map((b) => <BudgetRow key={b.c} cat={b.c} limit={b.limit} spent={b.spent} cats={data.cats} />)}
       </div>
 
-      <div className="section-title">Gastos por categoría</div>
+      <div className="section-title">Gastos por categoría {catRows.length > 6 && <button className="act" onClick={() => { setFilter('out'); setView('movimientos') }}>Ver todos ›</button>}</div>
       <div className="card">
-        {catRows.length === 0 ? <MiniEmpty text="Sin gastos en este periodo" /> : catRows.map(([name, val]) => {
+        {catRows.length === 0 ? <MiniEmpty text="Sin gastos en este periodo" /> : catRows.slice(0, 6).map(([name, val]) => {
           const col = colorForName(name)
           const pct = Math.max(4, (val / catMax) * 100)
           const share = Math.round((val / catTotal) * 100)
