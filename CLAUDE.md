@@ -1,0 +1,60 @@
+# CLAUDE.md — Contexto del proyecto Finanzas
+
+App de control de ingresos y gastos. PWA instalable, con login y sincronización en la nube por usuario.
+- **Producción:** https://rodrigoglezc.github.io/finanzas/
+- **Repo:** https://github.com/RodrigoGlezC/finanzas (rama `main`)
+
+## Stack
+- Vite + React 18 + TypeScript (estricto)
+- Zustand para el estado global (un solo store: `src/store.ts`)
+- Supabase (Auth email+contraseña + Postgres) para login y sync
+- vite-plugin-pwa (instalable, offline)
+- Deploy automático a GitHub Pages con GitHub Actions (`.github/workflows/deploy.yml`) en cada push a `main`. En `vite.config.ts`, `base: './'`.
+
+## Estructura
+```
+src/
+  main.tsx, App.tsx        (tema, sesión, ruteo de vistas)
+  store.ts                 (estado + persistencia + sync + control de sheets + toast)
+  types.ts, index.css      (design system estilo iOS)
+  lib/    constants, format, storage(+migrate), calc, recurring, period, supabase, sync, dataOps
+  components/  Nav, TabBar, Login, Sheet, Sheets, Toast, BackupBanner, BudgetRow, Keypad, ui
+  views/  Inicio, Movimientos, Presupuestos, Reportes, Ajustes
+  sheets/ Movement, Account, Budget, Goal, Aporte, Recurring, Category, Transfer, Reassign
+  charts/ Donut, TrendChart
+```
+
+## Modelo de datos (AppState = un JSON por usuario)
+`{ movements, cats, groups, budgets(map categoria->limite), accounts, goals, recurring, version, updatedAt }`
+- Se guarda en `localStorage` y, en modo nube, en Supabase tabla `user_data` (fila por usuario: `user_id`, `data jsonb`, `updated_at`) con RLS por `auth.uid()`. Sync = última escritura gana por `updatedAt`.
+- `Movement`: `{id,type:'in'|'out',amount,category,date,note,accountId,recurringId?,period?,goalId?,transfer?,transferId?,_c}`
+- `Category`: `{name, group, icon?}`. Cada usuario tiene SUS categorías (parten de `DEFAULT_CATS`, totalmente editables).
+
+## Decisiones y gotchas (respétalas)
+- **Transferencias** entre cuentas = 2 movimientos enlazados por `transferId` con `transfer:true` y categoría `'Transferencia'`. Se EXCLUYEN de ingresos/gastos/presupuestos/reportes (filtro `!m.transfer`) pero SÍ afectan el saldo de las cuentas.
+- **Recurrentes**: `materializeRecurring()` genera los vencidos de forma idempotente por `recurringId+period`. Al borrar una ocurrencia se agrega su `period` a `r.skip` para que no reaparezca.
+- **Metas**: `goalSaved = goal.initial + suma de movimientos con goalId` (fuente única de verdad; borrar un aporte ajusta la meta sola).
+- `iconFor(cat, type, cats)` resuelve primero el icono personalizado de la categoría.
+- `migrate()` en `lib/storage.ts` hace migración idempotente sin perder datos: **cualquier campo nuevo del modelo se inicializa AHÍ**.
+- `commit(fn)` en el store clona el estado, aplica cambios, hace bump de `updatedAt`, guarda en local y hace push con debounce a la nube.
+- Presupuestos y reportes son **mensuales**.
+
+## Backend (Supabase)
+- Las llaves van en `.env` (committed): `VITE_SUPABASE_URL` y `VITE_SUPABASE_ANON_KEY` (publishable key, **pública por diseño**; la seguridad la dan RLS + login). No la trates como secreto.
+- Auth email+contraseña, con "Confirm email" desactivado. Cada usuario solo ve sus datos.
+
+## Flujo de trabajo
+- Node 18+. `npm install`, `npm run dev` (localhost:5173), `npm run build` (valida tipos + empaqueta).
+- Se trabaja desde 2 PCs (casa y trabajo): **SIEMPRE `git pull` antes de empezar y `git push` al terminar**. Push a `main` dispara el deploy solo.
+
+## Features implementadas
+Captura rápida (teclado propio + chips de categoría con icono + recordar última cuenta/categoría + repetir último), cuentas con saldo, transferencias, presupuestos con alertas + "disponible para gastar", metas con aportes, pagos recurrentes (mensual/semanal) con "pagar" y próximos pagos, vista mes/semana, reportes (tendencia 6 meses, comparativa, resumen anual), búsqueda global, categorías personalizables (icono/edición/grupos propios), respaldo JSON export/import + recordatorio, tema claro/oscuro, PWA, deshacer en borrados.
+
+## Backlog conocido
+- Notificaciones push de recordatorios (frágil en iOS PWA) — pendiente.
+- Presupuestos solo mensuales.
+- localStorage ~5MB a muy largo plazo.
+- Sin tests automatizados.
+
+## Reglas para el asistente
+Antes de cambiar algo: lee los archivos relevantes, corre `npm run build` para validar, y no metas librerías nuevas salvo que sea necesario. Mantén el estilo iOS del design system y TypeScript estricto.
