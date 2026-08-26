@@ -100,8 +100,7 @@
   .track>span{display:block;height:100%;border-radius:999px;transition:width .55s cubic-bezier(.22,.7,.25,1);min-width:4px}
   .track.big{height:10px}
 
-  /* donut / charts */
-  .donut-wrap{display:flex;align-items:center;gap:22px;padding:8px 18px 20px}
+  /* charts */
   .legend{display:flex;flex-direction:column;gap:11px;flex:1}
   .legrow{display:flex;align-items:center;gap:10px;font-size:15px}
   .legdot{width:11px;height:11px;border-radius:4px;flex:0 0 auto}
@@ -181,12 +180,6 @@
   .frow select{text-align-last:right;color:var(--tint);font-weight:500}
   .frow input::placeholder{color:var(--label-3)}
   .hint{font-size:12.5px;color:var(--label-2);padding:0 20px 14px;margin-top:-8px}
-
-  .menu{position:fixed;right:16px;top:96px;background:var(--card);border-radius:14px;box-shadow:0 10px 40px rgba(0,0,0,.25);padding:6px;min-width:230px;z-index:55;opacity:0;transform:scale(.94);transform-origin:top right;pointer-events:none;transition:.16s;border:.5px solid var(--sep)}
-  .menu.show{opacity:1;transform:scale(1);pointer-events:auto}
-  .menu button{width:100%;text-align:left;border:none;background:transparent;color:var(--label);font-size:15px;padding:10px 12px;border-radius:9px;cursor:pointer;display:flex;align-items:center;gap:11px}
-  .menu button:active{background:var(--fill)} .menu button.danger{color:var(--red)}
-  .menu .mi{width:20px;text-align:center} .menu .msep{height:.5px;background:var(--sep);margin:5px 6px}
 
   .toast{position:fixed;bottom:calc(80px + env(safe-area-inset-bottom));left:50%;transform:translateX(-50%) translateY(16px);background:rgba(30,30,32,.94);color:#fff;-webkit-backdrop-filter:blur(10px);backdrop-filter:blur(10px);padding:12px 20px;border-radius:14px;font-size:15px;font-weight:500;opacity:0;pointer-events:none;transition:.26s;z-index:60;box-shadow:0 8px 30px rgba(0,0,0,.25);max-width:88%;text-align:center}
   .toast.show{opacity:1;transform:translateX(-50%) translateY(0)}

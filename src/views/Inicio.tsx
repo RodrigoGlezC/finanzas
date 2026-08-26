@@ -7,7 +7,6 @@ import { cap, colorForName, cssVar, money, monthKey, mondayOf, ymd } from '../li
 import { uid } from '../lib/storage'
 import { IconSquare, MiniEmpty } from '../components/ui'
 import BudgetRow from '../components/BudgetRow'
-import Donut from '../charts/Donut'
 import type { Recurring } from '../types'
 
 export default function Inicio() {
@@ -50,12 +49,6 @@ export default function Inicio() {
   const catRows = Object.entries(byCat).sort((a, b) => b[1] - a[1])
   const catMax = catRows.length ? catRows[0][1] : 1
   const catTotal = catRows.reduce((a, b) => a + b[1], 0)
-
-  // grupos (donut)
-  const byGroup: Record<string, number> = {}
-  mv.filter((m) => m.type === 'out').forEach((m) => { const g = catGroup(data, m.category); byGroup[g] = (byGroup[g] || 0) + m.amount })
-  const groupEntries = Object.entries(byGroup).sort((a, b) => b[1] - a[1])
-  const groupTotal = groupEntries.reduce((a, b) => a + b[1], 0)
 
   // presupuestos mini
   const budgetCats = Object.keys(data.budgets).filter((c) => data.budgets[c] > 0)
@@ -172,23 +165,6 @@ export default function Inicio() {
             </div>
           )
         })}
-      </div>
-
-      <div className="section-title">A dónde se va tu dinero</div>
-      <div className="card">
-        <div className="donut-wrap">
-          <Donut entries={groupEntries} />
-          <div className="legend">
-            {groupEntries.length === 0 ? <MiniEmpty text="Sin datos" /> : groupEntries.map(([g, v], i) => (
-              <div className="legrow" key={g}>
-                <span className="legdot" style={{ background: cssVar(`--s${(i % 8) + 1}`) }} />
-                <span className="ln">{g}</span>
-                <span className="lv tnum">{money(v)}</span>
-                <span className="lp">{Math.round((v / groupTotal) * 100)}%</span>
-              </div>
-            ))}
-          </div>
-        </div>
       </div>
     </>
   )

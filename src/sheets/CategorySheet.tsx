@@ -12,7 +12,7 @@ export default function CategorySheet({ name }: { name?: string }) {
 
   const editing = name ? data.cats.find((c) => c.name === name) : undefined
   const [catName, setCatName] = useState(editing?.name || '')
-  const [group, setGroup] = useState(editing?.group || data.groups.find((g) => g !== 'Ingresos') || data.groups[0])
+  const [group, setGroup] = useState(editing?.group || data.groups.find((g) => g !== 'Ingresos') || data.groups[0] || '')
   const [icon, setIcon] = useState(editing?.icon || '')
 
   function save() {

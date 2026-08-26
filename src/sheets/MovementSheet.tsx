@@ -12,6 +12,7 @@ export default function MovementSheet({ id }: { id?: string }) {
   const data = useStore((s) => s.data)
   const commit = useStore((s) => s.commit)
   const closeSheet = useStore((s) => s.closeSheet)
+  const openSheet = useStore((s) => s.openSheet)
   const setAnchorFromDate = useStore((s) => s.setAnchorFromDate)
   const showToast = useStore((s) => s.showToast)
 
@@ -64,13 +65,20 @@ export default function MovementSheet({ id }: { id?: string }) {
         <button className={type === 'in' ? 'on' : ''} onClick={() => switchType('in')}>Ingreso</button>
       </div>
 
-      <div className="catchips">
-        {cats.map((c) => (
-          <button key={c.name} className={`catchip ${catValue === c.name ? 'on' : ''}`} onClick={() => setCategory(c.name)}>
-            <span className="ci">{iconFor(c.name, type, data.cats)}</span>{c.name}
-          </button>
-        ))}
-      </div>
+      {cats.length === 0 ? (
+        <div className="empty" style={{ padding: '18px 12px', marginBottom: 12 }}>
+          <div className="e-s" style={{ marginBottom: 12 }}>Aún no tienes categorías. Crea la primera para empezar a registrar.</div>
+          <button className="btn-fill" onClick={() => openSheet({ kind: 'category' })}>+ Nueva categoría</button>
+        </div>
+      ) : (
+        <div className="catchips">
+          {cats.map((c) => (
+            <button key={c.name} className={`catchip ${catValue === c.name ? 'on' : ''}`} onClick={() => setCategory(c.name)}>
+              <span className="ci">{iconFor(c.name, type, data.cats)}</span>{c.name}
+            </button>
+          ))}
+        </div>
+      )}
 
       <div className="accchips">
         {data.accounts.map((a) => (

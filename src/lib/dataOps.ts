@@ -1,5 +1,6 @@
 import { useStore } from '../store'
 import { migrate, setLastBackup, uid } from './storage'
+import { DEFAULT_CATS } from './constants'
 import { getPeriod } from './period'
 import { catGroup, accName } from './calc'
 import { monthKey } from './format'
@@ -71,6 +72,15 @@ export function loadExample() {
     ['out', 'Ahorro', 150, 15, ''], ['out', 'Ahorro Personal', 200, 15, ''],
   ]
   commit((st: AppState) => {
+    // Asegura que existan las categorías/grupos que usa el ejemplo (el usuario nuevo parte sin categorías).
+    ex.forEach((r) => {
+      if (!st.cats.some((c) => c.name === r[1])) {
+        const def = DEFAULT_CATS.find((c) => c.name === r[1])
+        const group = def?.group || (r[0] === 'in' ? 'Ingresos' : 'Otros')
+        if (!st.groups.includes(group)) st.groups.splice(Math.max(0, st.groups.length - 1), 0, group)
+        st.cats.push({ name: r[1], group, icon: def?.icon })
+      }
+    })
     ex.forEach((r, i) => st.movements.push({
       id: uid('m_'), type: r[0] as 'in' | 'out', category: r[1], amount: r[2],
       date: d(r[3]), note: r[4], accountId: acc, _c: Date.now() + i,

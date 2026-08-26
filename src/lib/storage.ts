@@ -6,14 +6,18 @@ export function uid(p = ''): string {
 }
 
 export function emptyState(): AppState {
-  return migrate({ movements: [], cats: DEFAULT_CATS.slice(), groups: DEFAULT_GROUPS.slice() })
+  // Usuario nuevo: SIN categorías precargadas (totalmente personalizable).
+  // Se conservan los grupos por defecto sólo como sugerencias del selector.
+  return migrate({ movements: [], cats: [], groups: DEFAULT_GROUPS.slice() })
 }
 
 /** Migración idempotente desde cualquier versión previa, sin perder datos. */
 export function migrate(d: any): AppState {
   d.movements = d.movements || []
-  d.cats = d.cats && d.cats.length ? d.cats : DEFAULT_CATS.slice()
-  d.groups = d.groups && d.groups.length ? d.groups : DEFAULT_GROUPS.slice()
+  // Un array vacío es intencional (usuario nuevo o que borró todas sus categorías):
+  // se respeta. Sólo se siembran los defaults cuando el campo NO existe (datos legacy).
+  d.cats = Array.isArray(d.cats) ? d.cats : DEFAULT_CATS.slice()
+  d.groups = Array.isArray(d.groups) ? d.groups : DEFAULT_GROUPS.slice()
   if (!d.accounts || !d.accounts.length) {
     d.accounts = [{ id: 'acc_efvo', name: 'Efectivo', type: 'efectivo', opening: 0 }]
   }

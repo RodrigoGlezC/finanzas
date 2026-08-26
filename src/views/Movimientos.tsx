@@ -58,10 +58,6 @@ export default function Movimientos() {
     const m = data.movements.find((x) => x.id === id)
     if (!m) return
     const isRec = !!m.recurringId
-    const msg = isRec
-      ? `Este movimiento lo generó un pago recurrente.\n¿Eliminar solo "${m.category}" de ${money(m.amount, true)} en este periodo?`
-      : `¿Eliminar "${m.category}" de ${money(m.amount, true)}?`
-    if (!confirm(msg)) return
     const removed = { ...m }
     commit((st) => {
       if (isRec) {
@@ -70,14 +66,13 @@ export default function Movimientos() {
       }
       st.movements = st.movements.filter((x) => x.id !== id)
     })
-    showToast('Movimiento eliminado', () => commit((st) => {
+    showToast(isRec ? 'Pago recurrente quitado de este periodo' : 'Movimiento eliminado', () => commit((st) => {
       st.movements.push(removed)
       if (isRec) { const r = st.recurring.find((x) => x.id === removed.recurringId); if (r && r.skip) r.skip = r.skip.filter((p) => p !== removed.period) }
     }))
   }
 
   function delTransfer(tid: string) {
-    if (!confirm('¿Eliminar esta transferencia?')) return
     const pair = data.movements.filter((m) => m.transferId === tid)
     commit((st) => { st.movements = st.movements.filter((m) => m.transferId !== tid) })
     showToast('Transferencia eliminada', () => commit((st) => { st.movements.push(...pair) }))
