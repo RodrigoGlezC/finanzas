@@ -98,7 +98,7 @@ export const useStore = create<Store>((set, get) => ({
   session: null,
   cloudStatus: '',
   view: 'inicio',
-  periodMode: 'month',
+  periodMode: 'week',
   anchor: (() => { const t = new Date(); return new Date(t.getFullYear(), t.getMonth(), t.getDate()).getTime() })(),
   theme: initialTheme(),
   filterMode: 'all',

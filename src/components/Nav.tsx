@@ -32,8 +32,8 @@ export default function Nav() {
       </div>
       <div className="nav-row" style={{ marginTop: 10, gap: 8 }}>
         <div className="seg" style={{ maxWidth: 180, visibility: showStepper ? 'visible' : 'hidden' }}>
-          <button className={periodMode === 'month' ? 'on' : ''} onClick={() => setPeriodMode('month')}>Mes</button>
           <button className={periodMode === 'week' ? 'on' : ''} onClick={() => setPeriodMode('week')}>Semana</button>
+          <button className={periodMode === 'month' ? 'on' : ''} onClick={() => setPeriodMode('month')}>Mes</button>
         </div>
         <div className="grow" />
         <button className="navbtn" onClick={toggleTheme} title="Tema">{theme === 'dark' ? '☀️' : '🌙'}</button>
