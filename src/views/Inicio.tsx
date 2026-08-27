@@ -27,6 +27,17 @@ export default function Inicio() {
   const ahorro = mv.filter((m) => m.type === 'out' && catGroup(data, m.category) === 'Ahorros').reduce((a, b) => a + b.amount, 0)
   const balance = ingresos - gastos
 
+  // Delta del sobrante vs. el periodo anterior (mismo modo semana/mes)
+  const prevAnchor = periodMode === 'week'
+    ? new Date(anchor.getFullYear(), anchor.getMonth(), anchor.getDate() - 7)
+    : new Date(anchor.getFullYear(), anchor.getMonth() - 1, 1)
+  const PP = getPeriod(prevAnchor, periodMode)
+  const pmv = data.movements.filter((m) => PP.inRange(m.date) && !m.transfer)
+  const prevBalance = pmv.filter((m) => m.type === 'in').reduce((a, b) => a + b.amount, 0)
+    - pmv.filter((m) => m.type === 'out').reduce((a, b) => a + b.amount, 0)
+  const deltaPct = mv.length > 0 && prevBalance !== 0
+    ? Math.round(((balance - prevBalance) / Math.abs(prevBalance)) * 100) : null
+
   const avail = budgetSummary(data, anchor)
   const alerts = budgetAlerts(data, anchor)
 
@@ -64,8 +75,18 @@ export default function Inicio() {
   return (
     <>
       <div className="hero">
-        <div className="h-lab">Sobrante · {P.label}</div>
-        <div className="h-amt tnum" style={{ color: balance >= 0 ? 'var(--label)' : 'var(--red-ink)' }}>{money(balance)}</div>
+        <div className="h-eyebrow">{P.label}</div>
+        <div className="h-lead">
+          <div>
+            <div className="h-lab">{!mv.length ? 'Tu balance' : balance >= 0 ? 'Te sobran' : 'Te faltan'}</div>
+            <div className="h-amt tnum" style={{ color: balance >= 0 ? 'var(--label)' : 'var(--red-ink)' }}>{money(Math.abs(balance))}</div>
+          </div>
+          {deltaPct !== null && (
+            <span className={`h-delta ${deltaPct >= 0 ? 'up' : 'down'}`} aria-label={`${deltaPct >= 0 ? 'Subió' : 'Bajó'} ${Math.abs(deltaPct)}% vs. periodo anterior`}>
+              {deltaPct >= 0 ? '▲' : '▼'} {Math.abs(deltaPct)}%
+            </span>
+          )}
+        </div>
         <div className="h-note">{!mv.length ? 'Sin movimientos en este periodo' : balance >= 0 ? 'Vas bien este periodo 🎉' : 'Estás gastando de más'}</div>
         <div className="ratio">
           {(ingresos > 0 || gastos > 0) && <span style={{ width: gp + '%', background: 'var(--red)' }} />}
