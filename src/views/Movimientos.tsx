@@ -3,7 +3,7 @@ import { getPeriod } from '../lib/period'
 import { accName } from '../lib/calc'
 import { ACC_ICON, iconFor } from '../lib/constants'
 import { colorForName, cssVar, money, parseD } from '../lib/format'
-import { uid } from '../lib/storage'
+import { uid, addTombstones, removeTombstones } from '../lib/storage'
 import { IconSquare } from '../components/ui'
 import type { Movement } from '../types'
 
@@ -65,17 +65,20 @@ export default function Movimientos() {
         if (r) { r.skip = r.skip || []; if (m.period && !r.skip.includes(m.period)) r.skip.push(m.period) }
       }
       st.movements = st.movements.filter((x) => x.id !== id)
+      addTombstones(st, [id])
     })
     showToast(isRec ? 'Pago recurrente quitado de este periodo' : 'Movimiento eliminado', () => commit((st) => {
       st.movements.push(removed)
+      removeTombstones(st, [removed.id])
       if (isRec) { const r = st.recurring.find((x) => x.id === removed.recurringId); if (r && r.skip) r.skip = r.skip.filter((p) => p !== removed.period) }
     }))
   }
 
   function delTransfer(tid: string) {
     const pair = data.movements.filter((m) => m.transferId === tid)
-    commit((st) => { st.movements = st.movements.filter((m) => m.transferId !== tid) })
-    showToast('Transferencia eliminada', () => commit((st) => { st.movements.push(...pair) }))
+    const ids = pair.map((m) => m.id)
+    commit((st) => { st.movements = st.movements.filter((m) => m.transferId !== tid); addTombstones(st, ids) })
+    showToast('Transferencia eliminada', () => commit((st) => { st.movements.push(...pair); removeTombstones(st, ids) }))
   }
 
   function repetirUltimo() {

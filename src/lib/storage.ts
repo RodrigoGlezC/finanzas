@@ -5,6 +5,18 @@ export function uid(p = ''): string {
   return p + Date.now().toString(36) + Math.random().toString(36).slice(2, 6)
 }
 
+/** Marca movimientos como borrados (tombstone) para que la fusión no los resucite. */
+export function addTombstones(st: AppState, ids: string[]) {
+  if (!st.deleted) st.deleted = {}
+  const now = Date.now()
+  for (const id of ids) st.deleted[id] = now
+}
+/** Quita tombstones (p. ej. al deshacer un borrado). */
+export function removeTombstones(st: AppState, ids: string[]) {
+  if (!st.deleted) return
+  for (const id of ids) delete st.deleted[id]
+}
+
 export function emptyState(): AppState {
   // Usuario nuevo: SIN categorías precargadas (totalmente personalizable).
   // Se conservan los grupos por defecto sólo como sugerencias del selector.
@@ -26,6 +38,7 @@ export function migrate(d: any): AppState {
   d.budgets = d.budgets || {}
   d.recurring = d.recurring || []
   d.recurring.forEach((r: any) => { if (!Array.isArray(r.skip)) r.skip = [] })
+  d.deleted = d.deleted && typeof d.deleted === 'object' ? d.deleted : {}
   d.goals = d.goals || []
   d.goals.forEach((g: any) => {
     if (g.initial === undefined) {

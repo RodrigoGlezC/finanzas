@@ -1,5 +1,5 @@
 import { useStore } from '../store'
-import { migrate, setLastBackup, uid } from './storage'
+import { migrate, setLastBackup, uid, addTombstones } from './storage'
 import { DEFAULT_CATS } from './constants'
 import { getPeriod } from './period'
 import { catGroup, accName } from './calc'
@@ -92,6 +92,7 @@ export function clearAll() {
   if (!confirm('¿Borrar TODOS tus datos?\n\nTip: exporta un respaldo antes.')) return
   const { commit } = useStore.getState()
   commit((st: AppState) => {
+    addTombstones(st, st.movements.map((m) => m.id))
     st.movements = []
     st.budgets = {}
     st.goals = []

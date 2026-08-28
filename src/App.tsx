@@ -1,7 +1,9 @@
 import { useEffect, useRef, useState } from 'react'
 import { useStore } from './store'
 import { CLOUD, supabase } from './lib/supabase'
-import { loadCloud, pushCloud } from './lib/sync'
+import { loadCloud, pushCloud, mergeStates } from './lib/sync'
+import { migrate } from './lib/storage'
+import type { AppState } from './types'
 import Nav from './components/Nav'
 import TabBar from './components/TabBar'
 import Toast from './components/Toast'
@@ -55,8 +57,11 @@ export default function App() {
         const remote = await loadCloud(uid)
         const local = useStore.getState().data
         if (remote) {
-          if ((remote.updatedAt || 0) >= (local.updatedAt || 0)) replaceData(remote)
-          else await pushCloud(uid, local)
+          // Fusiona en vez de "el más nuevo gana": une los movimientos de ambos
+          // dispositivos y respeta tombstones, luego sube la unión.
+          const merged = mergeStates(remote, local)
+          replaceData(merged)
+          await pushCloud(uid, merged)
         } else {
           await pushCloud(uid, local)
         }
@@ -68,6 +73,29 @@ export default function App() {
       }
     })()
   }, [session, replaceData, setCloudStatus, showToast])
+
+  // Realtime: refresca cuando OTRO dispositivo empuja cambios. Requiere Realtime activo
+  // en Supabase (Database → Replication → tabla user_data). Si no lo está, no dispara nada.
+  useEffect(() => {
+    if (!CLOUD || !supabase || !session) return
+    const uid = session.user.id
+    const ch = supabase
+      .channel('userdata:' + uid)
+      .on(
+        'postgres_changes',
+        { event: '*', schema: 'public', table: 'user_data', filter: `user_id=eq.${uid}` },
+        (payload) => {
+          const row = payload.new as { data?: AppState } | null
+          if (!row?.data?.movements) return
+          const incoming = migrate(row.data)
+          const local = useStore.getState().data
+          if ((incoming.updatedAt || 0) <= (local.updatedAt || 0)) return // ignora el eco de nuestro propio push
+          replaceData(mergeStates(incoming, local))
+        },
+      )
+      .subscribe()
+    return () => { supabase!.removeChannel(ch) }
+  }, [session, replaceData])
 
   if (!ready) return null
   if (CLOUD && !session) return <Login />

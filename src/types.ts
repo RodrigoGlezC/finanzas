@@ -63,6 +63,8 @@ export interface AppState {
   budgets: Record<string, number>
   goals: Goal[]
   recurring: Recurring[]
+  /** Tombstones de movimientos borrados (id -> ms). Permiten fusionar sin resucitar borrados. */
+  deleted?: Record<string, number>
   version: number
   updatedAt: number
 }

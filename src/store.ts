@@ -4,7 +4,7 @@ import type { AppState, PeriodMode, Theme, ViewName } from './types'
 import { loadLocal, saveLocal } from './lib/storage'
 import { materializeRecurring } from './lib/recurring'
 import { CLOUD } from './lib/supabase'
-import { pushCloud } from './lib/sync'
+import { pushCloud, loadCloud, mergeStates } from './lib/sync'
 import { THEME_KEY } from './lib/constants'
 
 export type SheetState =
@@ -67,10 +67,22 @@ function schedulePush(getState: () => Store) {
   if (!CLOUD) return
   clearTimeout(pushTimer)
   pushTimer = setTimeout(async () => {
-    const { session, data } = getState()
+    const { session } = getState()
     if (!session) return
+    const uid = session.user.id
     try {
-      await pushCloud(session.user.id, data)
+      // Pull-antes-de-push: si la nube cambió desde otro dispositivo, fusionar
+      // (unión de movimientos) en vez de sobrescribir, y adoptar el merge en local.
+      let data = getState().data
+      const remote = await loadCloud(uid)
+      if (remote) {
+        const merged = mergeStates(remote, data)
+        if (merged.movements.length !== data.movements.length) {
+          getState().replaceData(merged)
+          data = merged
+        }
+      }
+      await pushCloud(uid, data)
       getState().setCloudStatus('ok')
     } catch (e) {
       console.warn('push', e)

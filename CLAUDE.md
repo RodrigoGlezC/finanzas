@@ -26,7 +26,8 @@ src/
 
 ## Modelo de datos (AppState = un JSON por usuario)
 `{ movements, cats, groups, budgets(map categoria->limite), accounts, goals, recurring, version, updatedAt }`
-- Se guarda en `localStorage` y, en modo nube, en Supabase tabla `user_data` (fila por usuario: `user_id`, `data jsonb`, `updated_at`) con RLS por `auth.uid()`. Sync = última escritura gana por `updatedAt`.
+- Se guarda en `localStorage` y, en modo nube, en Supabase tabla `user_data` (fila por usuario: `user_id`, `data jsonb`, `updated_at`) con RLS por `auth.uid()`.
+- **Sync (A1, tier pragmática):** antes de cada push se hace *pull-y-merge* (`mergeStates` en `lib/sync.ts`) para no sobrescribir cambios de otro dispositivo. Movimientos: el doc con `updatedAt` más nuevo es autoritativo y del más viejo se añaden los ids que no conoce (unión aditiva), con **tombstones** (`deleted: {id->ms}`) para que un borrado real no resucite; la presencia en el doc nuevo manda sobre el tombstone (deshacer gana). Resto de colecciones: última-escritura-gana por documento. Realtime opcional refresca al recibir cambios de otro dispositivo (requiere activar Realtime en `user_data`). Los borrados de movimiento registran tombstone en `delMov`/`delTransfer`/`clearAll` (y el deshacer lo quita).
 - `Movement`: `{id,type:'in'|'out',amount,category,date,note,accountId,recurringId?,period?,goalId?,transfer?,transferId?,_c}`
 - `Category`: `{name, group, icon?}`. Cada usuario tiene SUS categorías (parten de `DEFAULT_CATS`, totalmente editables).
 
