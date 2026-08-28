@@ -42,7 +42,7 @@
   .stepper button{border:none;background:transparent;color:var(--tint);cursor:pointer;width:28px;height:28px;border-radius:999px;font-size:18px;font-weight:600;display:grid;place-items:center}
   .stepper button:active{background:var(--fill-2)}
   .stepper .m{font-size:14px;font-weight:600;color:var(--label);min-width:96px;text-align:center;text-transform:capitalize}
-  .navbtn{border:none;background:var(--fill);color:var(--tint);cursor:pointer;width:34px;height:34px;border-radius:999px;font-size:16px;display:grid;place-items:center;transition:.12s}
+  .navbtn{border:none;background:var(--fill);color:var(--tint);cursor:pointer;width:40px;height:40px;border-radius:999px;font-size:16px;display:grid;place-items:center;transition:.12s}
   .navbtn:active{transform:scale(.92);background:var(--fill-2)}
   .navbtn.add{background:var(--tint);color:#fff;font-size:22px}
 
@@ -91,8 +91,17 @@
   .r-amt{font-size:16px;font-weight:600;letter-spacing:-.02em;white-space:nowrap}
   .r-amt.in{color:var(--green-ink)}
   .chev{color:var(--label-3);font-size:15px}
-  .del{border:none;background:transparent;color:var(--label-3);cursor:pointer;font-size:15px;width:28px;height:28px;border-radius:999px;display:grid;place-items:center}
+  .del{border:none;background:transparent;color:var(--label-3);cursor:pointer;font-size:15px;width:40px;height:44px;border-radius:999px;display:grid;place-items:center}
   .row:hover .del{color:var(--red)} .del:active{background:var(--fill)}
+
+  /* ErrorBoundary */
+  .err-screen{position:fixed;inset:0;z-index:90;background:var(--bg);display:flex;align-items:center;justify-content:center;padding:24px}
+  .err-box{width:100%;max-width:340px;text-align:center;background:var(--card);border-radius:var(--r-card);box-shadow:var(--shadow-card);padding:28px 24px}
+  .err-box .err-ic{font-size:36px}
+  .err-box h1{font-size:22px;font-weight:700;letter-spacing:-.02em;margin:10px 0 6px}
+  .err-box p{font-size:14.5px;color:var(--label-2);margin:0 0 20px;line-height:1.45}
+  .err-actions{display:flex;flex-direction:column;gap:10px}
+  .err-actions .btn-soft{width:100%;padding:12px}
 
   /* cat bars */
   .catrow{display:grid;grid-template-columns:auto 1fr;gap:12px;align-items:center;padding:11px 16px;position:relative}
@@ -124,7 +133,10 @@
   .searchbar input{width:100%;border:none;background:var(--fill);border-radius:10px;padding:9px 12px 9px 34px;font-size:16px;color:var(--label)}
   .searchbar input::placeholder{color:var(--label-2)}
   .searchbar .si{position:absolute;left:11px;top:50%;transform:translateY(-50%);color:var(--label-2);font-size:14px}
+  /* Foco solo con teclado: quita el anillo en foco de puntero, pero lo muestra
+     (accesible, WCAG 2.4.7) en navegación por teclado. El login usa su propio anillo. */
   input:focus,select:focus,textarea:focus{outline:none}
+  input:focus-visible,select:focus-visible,textarea:focus-visible,button:focus-visible,a:focus-visible{outline:2px solid var(--tint);outline-offset:2px;border-radius:8px}
 
   .chips{display:flex;gap:8px;overflow-x:auto;padding:2px;-webkit-overflow-scrolling:touch}
   .chip{flex:0 0 auto;border:none;background:var(--fill);color:var(--label);border-radius:999px;padding:7px 13px;font-size:14px;font-weight:500;cursor:pointer;white-space:nowrap}

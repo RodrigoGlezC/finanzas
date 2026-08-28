@@ -49,8 +49,19 @@ export function monthKey(d: Date): string {
 }
 
 /* ---------- colores ---------- */
+// Cache de variables CSS por tema: getComputedStyle es una lectura de estilo forzada,
+// y cssVar/colorForName se llaman por fila en listas. Se invalida al cambiar data-theme.
+let _varCache: Record<string, string> = {}
+let _varCacheTheme: string | null = null
 export function cssVar(name: string): string {
-  return getComputedStyle(document.documentElement).getPropertyValue(name).trim()
+  const theme = document.documentElement.getAttribute('data-theme') || ''
+  if (theme !== _varCacheTheme) { _varCache = {}; _varCacheTheme = theme }
+  let v = _varCache[name]
+  if (v === undefined) {
+    v = getComputedStyle(document.documentElement).getPropertyValue(name).trim()
+    _varCache[name] = v
+  }
+  return v
 }
 export function colorForName(name: string): string {
   let h = 0

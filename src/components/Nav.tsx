@@ -36,8 +36,8 @@ export default function Nav() {
           <button className={periodMode === 'month' ? 'on' : ''} onClick={() => setPeriodMode('month')}>Mes</button>
         </div>
         <div className="grow" />
-        <button className="navbtn" onClick={toggleTheme} title="Tema">{theme === 'dark' ? '☀️' : '🌙'}</button>
-        <button className="navbtn add" onClick={() => openSheet({ kind: 'movement' })} title="Nuevo">+</button>
+        <button className="navbtn" onClick={toggleTheme} title="Tema" aria-label={theme === 'dark' ? 'Cambiar a tema claro' : 'Cambiar a tema oscuro'}>{theme === 'dark' ? '☀️' : '🌙'}</button>
+        <button className="navbtn add" onClick={() => openSheet({ kind: 'movement' })} title="Nuevo" aria-label="Nuevo movimiento">+</button>
       </div>
     </div>
   )
