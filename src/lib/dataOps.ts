@@ -37,18 +37,18 @@ export function exportCsv() {
 
 export function importJson(file: File) {
   const rd = new FileReader()
-  rd.onload = (e) => {
+  rd.onload = async (e) => {
     try {
       const d = JSON.parse(String(e.target?.result))
       if (!d.movements) throw new Error('bad')
-      if (confirm('Esto reemplazará tus datos actuales. ¿Continuar?')) {
-        const migrated = migrate(d)
-        migrated.updatedAt = Date.now()
-        useStore.getState().replaceData(migrated)
-        // empuja a la nube
-        useStore.getState().commit(() => { /* no-op, sólo dispara push */ })
-        useStore.getState().showToast('Respaldo importado ✓')
-      }
+      const ok = await useStore.getState().askConfirm({ title: 'Importar respaldo', message: 'Esto reemplazará tus datos actuales por los del archivo.', confirmLabel: 'Importar', danger: true })
+      if (!ok) return
+      const migrated = migrate(d)
+      migrated.updatedAt = Date.now()
+      useStore.getState().replaceData(migrated)
+      // empuja a la nube
+      useStore.getState().commit(() => { /* no-op, sólo dispara push */ })
+      useStore.getState().showToast('Respaldo importado ✓')
     } catch {
       useStore.getState().showToast('Archivo no válido')
     }
@@ -56,9 +56,12 @@ export function importJson(file: File) {
   rd.readAsText(file)
 }
 
-export function loadExample() {
+export async function loadExample() {
   const { data, anchor, commit } = useStore.getState()
-  if (data.movements.length && !confirm('Se agregarán movimientos de ejemplo del mes actual. ¿Continuar?')) return
+  if (data.movements.length) {
+    const ok = await useStore.getState().askConfirm({ message: 'Se agregarán movimientos de ejemplo del mes actual.', confirmLabel: 'Agregar' })
+    if (!ok) return
+  }
   const a = new Date(anchor)
   const y = a.getFullYear(), m = a.getMonth()
   const acc = data.accounts[0].id
@@ -88,8 +91,9 @@ export function loadExample() {
   }, { toast: 'Ejemplo cargado ✨' })
 }
 
-export function clearAll() {
-  if (!confirm('¿Borrar TODOS tus datos?\n\nTip: exporta un respaldo antes.')) return
+export async function clearAll() {
+  const ok = await useStore.getState().askConfirm({ title: 'Borrar todos tus datos', message: 'Se borrarán movimientos, presupuestos, metas y recurrentes. Exporta un respaldo antes si quieres conservarlos.', confirmLabel: 'Borrar todo', danger: true })
+  if (!ok) return
   const { commit } = useStore.getState()
   commit((st: AppState) => {
     addTombstones(st, st.movements.map((m) => m.id))

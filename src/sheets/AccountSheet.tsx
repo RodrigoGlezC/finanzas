@@ -10,6 +10,7 @@ export default function AccountSheet({ id }: { id?: string }) {
   const closeSheet = useStore((s) => s.closeSheet)
   const openSheet = useStore((s) => s.openSheet)
   const showToast = useStore((s) => s.showToast)
+  const askConfirm = useStore((s) => s.askConfirm)
 
   const editing = id ? data.accounts.find((a) => a.id === id) : undefined
   const [name, setName] = useState(editing?.name || '')
@@ -31,12 +32,13 @@ export default function AccountSheet({ id }: { id?: string }) {
     closeSheet()
   }
 
-  function del() {
+  async function del() {
     if (!editing) return
     if (data.accounts.length <= 1) { showToast('Debe existir al menos una cuenta'); return }
     const count = data.movements.filter((m) => m.accountId === editing.id).length + data.recurring.filter((r) => r.accountId === editing.id).length
     if (count === 0) {
-      if (confirm('¿Eliminar esta cuenta?')) {
+      const ok = await askConfirm({ title: 'Eliminar cuenta', message: `¿Eliminar "${editing.name}"?`, confirmLabel: 'Eliminar', danger: true })
+      if (ok) {
         commit((st) => { st.accounts = st.accounts.filter((a) => a.id !== editing.id) })
         showToast('Cuenta eliminada'); closeSheet()
       }

@@ -10,6 +10,7 @@ import Toast from './components/Toast'
 import BackupBanner from './components/BackupBanner'
 import Login from './components/Login'
 import Sheets from './components/Sheets'
+import ConfirmDialog from './components/ConfirmDialog'
 import Inicio from './views/Inicio'
 import Movimientos from './views/Movimientos'
 import Presupuestos from './views/Presupuestos'
@@ -114,6 +115,7 @@ export default function App() {
       <TabBar />
       <Sheets />
       <Toast />
+      <ConfirmDialog />
     </>
   )
 }

@@ -108,6 +108,22 @@
   .err-actions{display:flex;flex-direction:column;gap:10px}
   .err-actions .btn-soft{width:100%;padding:12px}
 
+  /* Confirm alert (iOS) */
+  .confirm-scrim{position:fixed;inset:0;background:rgba(0,0,0,.4);z-index:70;animation:fade .2s}
+  @keyframes fade{from{opacity:0}to{opacity:1}}
+  .confirm-box{position:fixed;left:50%;top:50%;transform:translate(-50%,-50%);z-index:71;width:min(84%,300px);background:var(--card);border-radius:var(--r-md);box-shadow:0 20px 60px rgba(0,0,0,.35);overflow:hidden;text-align:center;animation:pop .2s cubic-bezier(.32,.72,0,1)}
+  @keyframes pop{from{opacity:0;transform:translate(-50%,-50%) scale(.9)}to{opacity:1;transform:translate(-50%,-50%) scale(1)}}
+  .confirm-title{font-size:16px;font-weight:700;padding:18px 18px 6px;color:var(--label)}
+  .confirm-msg{font-size:13.5px;color:var(--label-2);padding:0 18px 16px;line-height:1.4;white-space:pre-line}
+  .confirm-msg:first-child{padding-top:18px}
+  .confirm-actions{display:flex;border-top:.5px solid var(--sep)}
+  .confirm-btn{flex:1;border:none;background:transparent;color:var(--tint);font-size:16px;padding:12px;cursor:pointer}
+  .confirm-btn+.confirm-btn{border-left:.5px solid var(--sep)}
+  .confirm-btn.primary{font-weight:600}
+  .confirm-btn.danger{color:var(--red)}
+  .confirm-btn:active{background:var(--fill)}
+  @media (prefers-reduced-motion:reduce){.confirm-scrim,.confirm-box{animation:none}}
+
   /* cat bars */
   .catrow{display:grid;grid-template-columns:auto 1fr;gap:12px;align-items:center;padding:11px 16px;position:relative}
   .catrow:not(:last-child)::after{content:"";position:absolute;left:60px;right:16px;bottom:0;height:.5px;background:var(--sep)}

@@ -9,6 +9,7 @@ export default function GoalSheet({ id }: { id?: string }) {
   const commit = useStore((s) => s.commit)
   const closeSheet = useStore((s) => s.closeSheet)
   const showToast = useStore((s) => s.showToast)
+  const askConfirm = useStore((s) => s.askConfirm)
 
   const editing = id ? data.goals.find((g) => g.id === id) : undefined
   const [name, setName] = useState(editing?.name || '')
@@ -30,15 +31,15 @@ export default function GoalSheet({ id }: { id?: string }) {
     })
     showToast('Meta guardada'); closeSheet()
   }
-  function del() {
+  async function del() {
     if (!editing) return
-    if (confirm('¿Eliminar esta meta? Los aportes ya registrados se conservan como movimientos de ahorro.')) {
-      commit((st) => {
-        st.movements.forEach((m) => { if (m.goalId === editing.id) delete m.goalId })
-        st.goals = st.goals.filter((g) => g.id !== editing.id)
-      })
-      closeSheet()
-    }
+    const ok = await askConfirm({ title: 'Eliminar meta', message: 'Los aportes ya registrados se conservan como movimientos de ahorro.', confirmLabel: 'Eliminar', danger: true })
+    if (!ok) return
+    commit((st) => {
+      st.movements.forEach((m) => { if (m.goalId === editing.id) delete m.goalId })
+      st.goals = st.goals.filter((g) => g.id !== editing.id)
+    })
+    closeSheet()
   }
 
   return (

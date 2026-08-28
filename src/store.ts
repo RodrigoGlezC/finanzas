@@ -21,6 +21,8 @@ export type SheetState =
   | { kind: 'reassignCategory'; name: string }
 
 export interface ToastState { msg: string; undo?: () => void; key: number }
+export interface ConfirmBox { title?: string; message: string; confirmLabel: string; danger?: boolean; resolve: (ok: boolean) => void }
+export interface ConfirmOpts { title?: string; message: string; confirmLabel?: string; danger?: boolean }
 
 interface Store {
   data: AppState
@@ -36,6 +38,7 @@ interface Store {
   pmTab: 'budgets' | 'goals'
   sheet: SheetState
   toast: ToastState | null
+  confirmBox: ConfirmBox | null
   bannerDismissed: boolean
   backupSignal: number
 
@@ -57,6 +60,8 @@ interface Store {
   closeSheet: () => void
   showToast: (msg: string, undo?: () => void) => void
   clearToast: () => void
+  askConfirm: (o: ConfirmOpts) => Promise<boolean>
+  resolveConfirm: (ok: boolean) => void
   setSession: (s: Session | null) => void
   setCloudStatus: (s: '' | 'ok' | 'off') => void
   dismissBanner: () => void
@@ -119,6 +124,7 @@ export const useStore = create<Store>((set, get) => ({
   pmTab: 'budgets',
   sheet: null,
   toast: null,
+  confirmBox: null,
   bannerDismissed: false,
   backupSignal: 0,
 
@@ -181,6 +187,10 @@ export const useStore = create<Store>((set, get) => ({
   closeSheet: () => set({ sheet: null }),
   showToast: (msg, undo) => set({ toast: { msg, undo, key: ++toastSeq } }),
   clearToast: () => set({ toast: null }),
+  askConfirm: (o) => new Promise<boolean>((resolve) => {
+    set({ confirmBox: { title: o.title, message: o.message, confirmLabel: o.confirmLabel || 'Confirmar', danger: o.danger, resolve } })
+  }),
+  resolveConfirm: (ok) => { const c = get().confirmBox; set({ confirmBox: null }); c?.resolve(ok) },
   setSession: (s) => set({ session: s }),
   setCloudStatus: (s) => set({ cloudStatus: s }),
   dismissBanner: () => set({ bannerDismissed: true }),

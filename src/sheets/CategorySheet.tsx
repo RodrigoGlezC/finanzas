@@ -9,6 +9,7 @@ export default function CategorySheet({ name }: { name?: string }) {
   const closeSheet = useStore((s) => s.closeSheet)
   const openSheet = useStore((s) => s.openSheet)
   const showToast = useStore((s) => s.showToast)
+  const askConfirm = useStore((s) => s.askConfirm)
 
   const editing = name ? data.cats.find((c) => c.name === name) : undefined
   const [catName, setCatName] = useState(editing?.name || '')
@@ -43,11 +44,12 @@ export default function CategorySheet({ name }: { name?: string }) {
     closeSheet()
   }
 
-  function del() {
+  async function del() {
     if (!editing) return
     const count = data.movements.filter((m) => m.category === editing.name).length + data.recurring.filter((r) => r.category === editing.name).length
     if (count === 0) {
-      if (confirm(`¿Eliminar la categoría "${editing.name}"?`)) {
+      const ok = await askConfirm({ title: 'Eliminar categoría', message: `¿Eliminar "${editing.name}"?`, confirmLabel: 'Eliminar', danger: true })
+      if (ok) {
         commit((st) => { if (st.budgets[editing.name]) delete st.budgets[editing.name]; st.cats = st.cats.filter((c) => c.name !== editing.name) })
         showToast('Categoría eliminada'); closeSheet()
       }

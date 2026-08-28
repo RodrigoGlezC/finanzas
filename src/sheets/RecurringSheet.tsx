@@ -12,6 +12,7 @@ export default function RecurringSheet({ id }: { id?: string }) {
   const closeSheet = useStore((s) => s.closeSheet)
   const materializeNow = useStore((s) => s.materializeNow)
   const showToast = useStore((s) => s.showToast)
+  const askConfirm = useStore((s) => s.askConfirm)
 
   const editing = id ? data.recurring.find((r) => r.id === id) : undefined
   const [type, setType] = useState<MovType>(editing?.type || 'out')
@@ -47,12 +48,12 @@ export default function RecurringSheet({ id }: { id?: string }) {
     commit((st) => { const r = st.recurring.find((x) => x.id === id); if (r) r.active = r.active === false })
     showToast(editing.active === false ? 'Reactivado' : 'Pausado'); closeSheet()
   }
-  function del() {
+  async function del() {
     if (!editing) return
-    if (confirm('¿Eliminar recurrente? Los movimientos ya generados se conservan.')) {
-      commit((st) => { st.recurring = st.recurring.filter((r) => r.id !== id) })
-      closeSheet()
-    }
+    const ok = await askConfirm({ title: 'Eliminar recurrente', message: 'Los movimientos ya generados se conservan.', confirmLabel: 'Eliminar', danger: true })
+    if (!ok) return
+    commit((st) => { st.recurring = st.recurring.filter((r) => r.id !== id) })
+    closeSheet()
   }
 
   return (
