@@ -45,7 +45,7 @@ src/
 - Auth email+contraseña, con "Confirm email" desactivado. Cada usuario solo ve sus datos.
 
 ## Flujo de trabajo
-- Node 18+. `npm install`, `npm run dev` (localhost:5173), `npm run build` (valida tipos + empaqueta).
+- Node 18+. `npm install`, `npm run dev` (localhost:5173), `npm run build` (valida tipos + empaqueta), `npm test` (Vitest, tests de `lib/`).
 - Se trabaja desde 2 PCs (casa y trabajo): **SIEMPRE `git pull` antes de empezar y `git push` al terminar**. Push a `main` dispara el deploy solo.
 
 ## Features implementadas
@@ -55,7 +55,7 @@ Captura rápida (teclado propio + chips de categoría con icono + recordar últi
 - Notificaciones push de recordatorios (frágil en iOS PWA) — pendiente.
 - Presupuestos solo mensuales.
 - localStorage ~5MB a muy largo plazo.
-- Sin tests automatizados.
+- Tests: `lib/` cubierto con Vitest (`mergeStates`, `migrate`, `goalSaved`, `accBalance`, `budgetSummary`, `materializeRecurring`). La UI (componentes/vistas) aún sin tests.
 
 ## Reglas para el asistente
 Antes de cambiar algo: lee los archivos relevantes, corre `npm run build` para validar, y no metas librerías nuevas salvo que sea necesario. Mantén el estilo iOS del design system y TypeScript estricto.
