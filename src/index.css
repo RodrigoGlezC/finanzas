@@ -196,6 +196,11 @@
   .tabbar button .tb-ic{display:grid;place-items:center;transition:transform .12s}
   .tabbar button:active .tb-ic{transform:scale(.86)}
   .tabbar button.on{color:var(--tint)}
+  /* FAB · captura al pulgar */
+  .fab{position:fixed;right:16px;bottom:calc(74px + env(safe-area-inset-bottom));z-index:46;width:56px;height:56px;border-radius:var(--r-pill);border:none;background:var(--tint);color:#fff;display:grid;place-items:center;cursor:pointer;box-shadow:0 8px 22px -6px color-mix(in srgb,var(--tint) 55%,transparent),0 2px 6px rgba(0,0,0,.18);transition:transform .14s,box-shadow .14s}
+  .fab:active{transform:scale(.9)}
+  .fab:focus-visible{outline:none;box-shadow:0 0 0 4px color-mix(in srgb,var(--tint) 30%,transparent)}
+  @media(prefers-reduced-motion:reduce){.fab{transition:none}}
 
   /* SHEET */
   .scrim{position:fixed;inset:0;background:rgba(0,0,0,.4);opacity:0;pointer-events:none;transition:opacity .28s;z-index:50}

@@ -14,7 +14,6 @@ export default function Nav() {
   const step = useStore((s) => s.step)
   const setPeriodMode = useStore((s) => s.setPeriodMode)
   const toggleTheme = useStore((s) => s.toggleTheme)
-  const openSheet = useStore((s) => s.openSheet)
 
   const showStepper = view === 'inicio' || view === 'movimientos'
   const label = getPeriod(new Date(anchor), periodMode).label
@@ -37,7 +36,6 @@ export default function Nav() {
         </div>
         <div className="grow" />
         <button className="navbtn" onClick={toggleTheme} title="Tema" aria-label={theme === 'dark' ? 'Cambiar a tema claro' : 'Cambiar a tema oscuro'}>{theme === 'dark' ? '☀️' : '🌙'}</button>
-        <button className="navbtn add" onClick={() => openSheet({ kind: 'movement' })} title="Nuevo" aria-label="Nuevo movimiento">+</button>
       </div>
     </div>
   )

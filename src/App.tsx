@@ -11,6 +11,7 @@ import BackupBanner from './components/BackupBanner'
 import Login from './components/Login'
 import Sheets from './components/Sheets'
 import ConfirmDialog from './components/ConfirmDialog'
+import QuickAdd from './components/QuickAdd'
 import Inicio from './views/Inicio'
 import Movimientos from './views/Movimientos'
 import Presupuestos from './views/Presupuestos'
@@ -113,6 +114,7 @@ export default function App() {
         {view === 'ajustes' && <Ajustes />}
       </div>
       <TabBar />
+      <QuickAdd />
       <Sheets />
       <Toast />
       <ConfirmDialog />
