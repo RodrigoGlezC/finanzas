@@ -107,11 +107,13 @@ export default function App() {
       <Nav />
       <div className="wrap">
         <BackupBanner />
-        {view === 'inicio' && <Inicio />}
-        {view === 'movimientos' && <Movimientos />}
-        {view === 'presupuestos' && <Presupuestos />}
-        {view === 'reportes' && <Reportes />}
-        {view === 'ajustes' && <Ajustes />}
+        <div className="view-fade" key={view}>
+          {view === 'inicio' && <Inicio />}
+          {view === 'movimientos' && <Movimientos />}
+          {view === 'presupuestos' && <Presupuestos />}
+          {view === 'reportes' && <Reportes />}
+          {view === 'ajustes' && <Ajustes />}
+        </div>
       </div>
       <TabBar />
       <QuickAdd />
