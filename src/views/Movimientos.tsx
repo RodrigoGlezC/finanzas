@@ -2,7 +2,7 @@ import { useStore } from '../store'
 import { getPeriod } from '../lib/period'
 import { accName } from '../lib/calc'
 import { ACC_ICON, iconFor } from '../lib/constants'
-import { colorForName, cssVar, money, parseD } from '../lib/format'
+import { cssVar, money, parseD } from '../lib/format'
 import { uid, addTombstones, removeTombstones } from '../lib/storage'
 import { IconSquare } from '../components/ui'
 import Money from '../components/Money'
@@ -142,7 +142,7 @@ export default function Movimientos() {
             )
           }
           const m = r.m
-          const col = m.type === 'in' ? cssVar('--green') : colorForName(m.category)
+          const col = m.type === 'in' ? cssVar('--green') : cssVar('--tint')
           const dt = parseD(m.date).toLocaleDateString('es-MX', { day: 'numeric', month: 'short' })
           const rec = m.recurringId ? ' · 🔁' : ''
           const sub = (m.note ? m.note + ' · ' : '') + dt + ' · ' + accName(data, m.accountId) + rec

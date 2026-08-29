@@ -4,6 +4,7 @@
     --sep:rgba(60,60,67,.12); --sep-2:rgba(60,60,67,.20);
     --label:#1c1c1e; --label-2:rgba(60,60,67,.6); --label-3:rgba(60,60,67,.32);
     --fill:rgba(118,118,128,.12); --fill-2:rgba(118,118,128,.2);
+    --border:rgba(60,60,67,.18);
     --tint:#0B6B4F; --green:#34c759; --green-ink:#248a3d; --red:#ff3b30; --red-ink:#d70015;
     --orange:#ff9500; --orange-ink:#c93400; --yellow:#ffcc00;
     --nav-bg:rgba(249,249,251,.82); --tabbar-bg:rgba(249,249,251,.9); --thumb:#fff;
@@ -22,6 +23,7 @@
     --sep:rgba(84,84,88,.55); --sep-2:rgba(84,84,88,.75);
     --label:#fff; --label-2:rgba(235,235,245,.6); --label-3:rgba(235,235,245,.3);
     --fill:rgba(118,118,128,.24); --fill-2:rgba(118,118,128,.36);
+    --border:rgba(84,84,88,.6);
     --tint:#12B981; --green:#30d158; --green-ink:#30d158; --red:#ff453a; --red-ink:#ff453a;
     --orange:#ff9f0a; --orange-ink:#ff9f0a; --yellow:#ffd60a;
     --nav-bg:rgba(20,20,22,.8); --tabbar-bg:rgba(20,20,22,.9); --thumb:#636366;
@@ -244,7 +246,8 @@
   .banner .bk-ic{font-size:18px}
   .banner .bk-btn{padding:7px 12px;font-size:14px;flex:0 0 auto}
   .banner .bk-x{border:none;background:transparent;color:var(--label-3);font-size:15px;cursor:pointer;padding:4px;flex:0 0 auto}
-  .undo-btn{margin-left:14px;background:none;border:none;color:#4da3ff;font:inherit;font-weight:700;cursor:pointer}
+  /* El toast siempre es superficie oscura → esmeralda de marca aclarada para contraste en ambos temas */
+  .undo-btn{margin-left:14px;background:none;border:none;color:color-mix(in srgb,var(--tint) 55%,#fff);font:inherit;font-weight:700;cursor:pointer}
   /* ===== Auth · "Libro mayor" ===== */
   #loginScreen{
     --auth-surface:#F6F7F5; --auth-panel:#FFFFFF; --auth-ink:#10201A; --auth-ink-soft:#5B6B64;

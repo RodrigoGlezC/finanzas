@@ -3,7 +3,7 @@ import { useStore } from '../store'
 import { CLOUD, supabase } from '../lib/supabase'
 import { accBalance, accName } from '../lib/calc'
 import { ACC_ICON, WEEKDAYS, iconFor } from '../lib/constants'
-import { cap, colorForName, cssVar, money, tint } from '../lib/format'
+import { cap, cssVar, money, tint } from '../lib/format'
 import { STORE_KEY } from '../lib/constants'
 import { IconSquare } from '../components/ui'
 import { clearAll, exportCsv, exportJson, importJson, loadExample } from '../lib/dataOps'
@@ -35,7 +35,7 @@ export default function Ajustes() {
             <button className="btn-fill" onClick={() => openSheet({ kind: 'recurring' })}>Añadir recurrente</button>
           </div>
         ) : data.recurring.map((r) => {
-          const col = r.type === 'in' ? cssVar('--green') : colorForName(r.category)
+          const col = r.type === 'in' ? cssVar('--green') : cssVar('--tint')
           const freq = r.freq === 'mensual' ? `Día ${r.day} de cada mes` : `Cada ${WEEKDAYS[(r.day || 1) - 1]}`
           return (
             <div className="row tappable" key={r.id} onClick={() => openSheet({ kind: 'recurring', id: r.id })}>
@@ -65,7 +65,7 @@ export default function Ajustes() {
             <div className="glabel" style={{ padding: '12px 16px 4px' }}>{g}</div>
             {catsByGroup[g].map((c) => (
               <div className="row tappable" key={c.name} onClick={() => openSheet({ kind: 'category', name: c.name })}>
-                <IconSquare emoji={iconFor(c.name, g === 'Ingresos' ? 'in' : 'out', data.cats)} color={g === 'Ingresos' ? cssVar('--green') : colorForName(c.name)} />
+                <IconSquare emoji={iconFor(c.name, g === 'Ingresos' ? 'in' : 'out', data.cats)} color={g === 'Ingresos' ? cssVar('--green') : cssVar('--tint')} />
                 <div className="r-main"><div className="r-title">{c.name}</div></div>
                 <div className="r-trail">
                   {usedCats.has(c.name) && <span className="r-sub">en uso</span>}

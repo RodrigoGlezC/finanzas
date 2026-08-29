@@ -3,7 +3,7 @@ import { getPeriod } from '../lib/period'
 import { accBalance, budgetAlerts, budgetSummary, catGroup, spentByCatMonth } from '../lib/calc'
 import { upcomingList } from '../lib/recurring'
 import { ACC_ICON, iconFor } from '../lib/constants'
-import { cap, colorForName, cssVar, money, monthKey, mondayOf, ymd } from '../lib/format'
+import { cap, cssVar, money, monthKey, mondayOf, ymd } from '../lib/format'
 import { uid } from '../lib/storage'
 import { IconSquare, MiniEmpty } from '../components/ui'
 import BudgetRow from '../components/BudgetRow'
@@ -148,7 +148,7 @@ export default function Inicio() {
           <div className="section-title">Próximos pagos</div>
           <div className="card">
             {upcoming.map(({ r, date }, i) => {
-              const col = r.type === 'in' ? cssVar('--green') : colorForName(r.category)
+              const col = r.type === 'in' ? cssVar('--green') : cssVar('--tint')
               const dd = date.toLocaleDateString('es-MX', { day: 'numeric', month: 'short' })
               return (
                 <div className="row" key={i}>
