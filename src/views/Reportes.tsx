@@ -1,7 +1,8 @@
 import { useStore } from '../store'
 import { catGroup, monthlySeries } from '../lib/calc'
-import { cap, cssVar, money, parseD, tint } from '../lib/format'
+import { cap, cssVar, parseD, tint } from '../lib/format'
 import { IconSquare } from '../components/ui'
+import Money from '../components/Money'
 import TrendChart from '../charts/TrendChart'
 
 export default function Reportes() {
@@ -48,32 +49,32 @@ export default function Reportes() {
         <div className="row">
           <IconSquare emoji="💰" color={cssVar('--green')} />
           <div className="r-main"><div className="r-title">Ingresos</div><div className="r-sub">vs mes anterior</div></div>
-          <div className="r-trail"><span className="r-amt tnum">{money(cur.in)}</span><span className={`badge ${dIn >= 0 ? 'ok' : 'over'}`}>{dIn >= 0 ? '▲' : '▼'} {Math.abs(Math.round(dIn))}%</span></div>
+          <div className="r-trail"><span className="r-amt tnum"><Money value={cur.in} /></span><span className={`badge ${dIn >= 0 ? 'ok' : 'over'}`}>{dIn >= 0 ? '▲' : '▼'} {Math.abs(Math.round(dIn))}%</span></div>
         </div>
         <div className="row">
           <IconSquare emoji="🧾" color={cssVar('--red')} />
           <div className="r-main"><div className="r-title">Gastos</div><div className="r-sub">vs mes anterior</div></div>
-          <div className="r-trail"><span className="r-amt tnum">{money(cur.out)}</span><span className={`badge ${dOut <= 0 ? 'ok' : 'over'}`}>{dOut >= 0 ? '▲' : '▼'} {Math.abs(Math.round(dOut))}%</span></div>
+          <div className="r-trail"><span className="r-amt tnum"><Money value={cur.out} /></span><span className={`badge ${dOut <= 0 ? 'ok' : 'over'}`}>{dOut >= 0 ? '▲' : '▼'} {Math.abs(Math.round(dOut))}%</span></div>
         </div>
         <div className="row">
           <IconSquare emoji="📈" color={cssVar('--s7')} />
           <div className="r-main"><div className="r-title">Sobrante</div><div className="r-sub">este mes</div></div>
-          <div className="r-amt tnum" style={{ color: cur.in - cur.out >= 0 ? 'var(--green-ink)' : 'var(--red-ink)' }}>{money(cur.in - cur.out)}</div>
+          <div className="r-amt tnum" style={{ color: cur.in - cur.out >= 0 ? 'var(--green-ink)' : 'var(--red-ink)' }}><Money value={cur.in - cur.out} /></div>
         </div>
       </div>
 
       <div className="section-title">Resumen {year}</div>
       <div className="tiles">
-        <div className="tile"><div className="t-lab">Ingresos del año</div><div className="t-val tnum" style={{ color: 'var(--green-ink)' }}>{money(tin)}</div></div>
-        <div className="tile"><div className="t-lab">Gastos del año</div><div className="t-val tnum">{money(tout)}</div></div>
-        <div className="tile"><div className="t-lab">Ahorrado</div><div className="t-val tnum" style={{ color: 'var(--s7)' }}>{money(tsave)}</div></div>
-        <div className="tile"><div className="t-lab">Sobrante</div><div className="t-val tnum" style={{ color: tin - tout >= 0 ? 'var(--green-ink)' : 'var(--red-ink)' }}>{money(tin - tout)}</div></div>
+        <div className="tile"><div className="t-lab">Ingresos del año</div><div className="t-val tnum" style={{ color: 'var(--green-ink)' }}><Money value={tin} /></div></div>
+        <div className="tile"><div className="t-lab">Gastos del año</div><div className="t-val tnum"><Money value={tout} /></div></div>
+        <div className="tile"><div className="t-lab">Ahorrado</div><div className="t-val tnum" style={{ color: 'var(--s7)' }}><Money value={tsave} /></div></div>
+        <div className="tile"><div className="t-lab">Sobrante</div><div className="t-val tnum" style={{ color: tin - tout >= 0 ? 'var(--green-ink)' : 'var(--red-ink)' }}><Money value={tin - tout} /></div></div>
       </div>
       <div className="card" style={{ marginTop: 12 }}>
-        <div className="row"><span className="ic" style={{ background: tint(cssVar('--s2'), 15) }}>🏆</span><div className="r-main"><div className="r-title">Donde más gastas</div><div className="r-sub">{topCat ? topCat[0] : '—'}</div></div><div className="r-amt tnum">{topCat ? money(topCat[1]) : '—'}</div></div>
-        <div className="row"><span className="ic" style={{ background: tint(cssVar('--green'), 15) }}>😄</span><div className="r-main"><div className="r-title">Mejor mes</div><div className="r-sub">{best ? mName(best.k) : '—'}</div></div><div className="r-amt tnum" style={{ color: 'var(--green-ink)' }}>{best ? money(best.net) : '—'}</div></div>
-        <div className="row"><span className="ic" style={{ background: tint(cssVar('--red'), 15) }}>😥</span><div className="r-main"><div className="r-title">Mes más apretado</div><div className="r-sub">{worst ? mName(worst.k) : '—'}</div></div><div className="r-amt tnum" style={{ color: worst && worst.net < 0 ? 'var(--red-ink)' : 'var(--label)' }}>{worst ? money(worst.net) : '—'}</div></div>
-        <div className="row"><span className="ic" style={{ background: tint(cssVar('--s1'), 15) }}>📊</span><div className="r-main"><div className="r-title">Gasto promedio mensual</div><div className="r-sub">{nMonths} {nMonths === 1 ? 'mes' : 'meses'} con datos</div></div><div className="r-amt tnum">{money(tout / nMonths)}</div></div>
+        <div className="row"><span className="ic" style={{ background: tint(cssVar('--s2'), 15) }}>🏆</span><div className="r-main"><div className="r-title">Donde más gastas</div><div className="r-sub">{topCat ? topCat[0] : '—'}</div></div><div className="r-amt tnum">{topCat ? <Money value={topCat[1]} /> : '—'}</div></div>
+        <div className="row"><span className="ic" style={{ background: tint(cssVar('--green'), 15) }}>😄</span><div className="r-main"><div className="r-title">Mejor mes</div><div className="r-sub">{best ? mName(best.k) : '—'}</div></div><div className="r-amt tnum" style={{ color: 'var(--green-ink)' }}>{best ? <Money value={best.net} /> : '—'}</div></div>
+        <div className="row"><span className="ic" style={{ background: tint(cssVar('--red'), 15) }}>😥</span><div className="r-main"><div className="r-title">Mes más apretado</div><div className="r-sub">{worst ? mName(worst.k) : '—'}</div></div><div className="r-amt tnum" style={{ color: worst && worst.net < 0 ? 'var(--red-ink)' : 'var(--label)' }}>{worst ? <Money value={worst.net} /> : '—'}</div></div>
+        <div className="row"><span className="ic" style={{ background: tint(cssVar('--s1'), 15) }}>📊</span><div className="r-main"><div className="r-title">Gasto promedio mensual</div><div className="r-sub">{nMonths} {nMonths === 1 ? 'mes' : 'meses'} con datos</div></div><div className="r-amt tnum"><Money value={tout / nMonths} /></div></div>
       </div>
     </>
   )

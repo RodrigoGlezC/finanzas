@@ -5,6 +5,7 @@ import { ACC_ICON, iconFor } from '../lib/constants'
 import { colorForName, cssVar, money, parseD } from '../lib/format'
 import { uid, addTombstones, removeTombstones } from '../lib/storage'
 import { IconSquare } from '../components/ui'
+import Money from '../components/Money'
 import type { Movement } from '../types'
 
 type Row = { kind: 'mov'; m: Movement } | { kind: 'transfer'; id: string; out: Movement; inMov: Movement }
@@ -134,7 +135,7 @@ export default function Movimientos() {
                 <IconSquare emoji="🔄" color={cssVar('--s1')} />
                 <div className="r-main"><div className="r-title">Transferencia</div><div className="r-sub">{accName(data, r.out.accountId)} → {accName(data, r.inMov.accountId)} · {dt}</div></div>
                 <div className="r-trail">
-                  <span className="r-amt tnum" style={{ color: 'var(--label-2)' }}>{money(r.out.amount, true)}</span>
+                  <span className="r-amt tnum" style={{ color: 'var(--label-2)' }}><Money value={r.out.amount} decimals /></span>
                   <button className="del" aria-label="Eliminar transferencia" onClick={() => delTransfer(r.id)}>✕</button>
                 </div>
               </div>
@@ -150,7 +151,7 @@ export default function Movimientos() {
               <IconSquare emoji={iconFor(m.category, m.type, data.cats)} color={col} />
               <div className="r-main"><div className="r-title">{m.category}</div><div className="r-sub">{sub}</div></div>
               <div className="r-trail">
-                <span className={`r-amt ${m.type === 'in' ? 'in' : ''} tnum`}>{m.type === 'in' ? '+' : '−'}{money(m.amount, true)}</span>
+                <span className={`r-amt ${m.type === 'in' ? 'in' : ''} tnum`}>{m.type === 'in' ? '+' : '−'}<Money value={m.amount} decimals /></span>
                 <button className="del" aria-label={`Eliminar ${m.category} de ${money(m.amount, true)}`} onClick={(e) => { e.stopPropagation(); delMov(m.id) }}>✕</button>
               </div>
             </div>
