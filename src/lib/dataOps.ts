@@ -88,7 +88,7 @@ export async function loadExample() {
       id: uid('m_'), type: r[0] as 'in' | 'out', category: r[1], amount: r[2],
       date: d(r[3]), note: r[4], accountId: acc, _c: Date.now() + i,
     }))
-  }, { toast: 'Ejemplo cargado ✨' })
+  }, { toast: 'Ejemplo cargado' })
 }
 
 export async function clearAll() {

@@ -5,6 +5,7 @@ import { ACC_ICON, iconFor } from '../lib/constants'
 import { cssVar, money, parseD } from '../lib/format'
 import { uid, addTombstones, removeTombstones } from '../lib/storage'
 import { IconSquare } from '../components/ui'
+import { Icon } from '../lib/icons'
 import Money from '../components/Money'
 import type { Movement } from '../types'
 
@@ -101,13 +102,13 @@ export default function Movimientos() {
           <button className={filterMode === 'out' ? 'on' : ''} onClick={() => setFilter('out')}>Gastos</button>
         </div>
         <div className="searchbar">
-          <span className="si">🔍</span>
+          <span className="si"><Icon name="search" /></span>
           <input placeholder="Buscar en todo tu historial" value={search} onChange={(e) => setSearch(e.target.value)} />
         </div>
         <div className="chips">
           <button className={`chip ${accFilter === 'all' ? 'on' : ''}`} onClick={() => setAccFilter('all')}>Todas</button>
           {data.accounts.map((a) => (
-            <button key={a.id} className={`chip ${accFilter === a.id ? 'on' : ''}`} onClick={() => setAccFilter(a.id)}>{ACC_ICON[a.type] || ''} {a.name}</button>
+            <button key={a.id} className={`chip ${accFilter === a.id ? 'on' : ''}`} onClick={() => setAccFilter(a.id)}><Icon name={ACC_ICON[a.type] || 'wallet'} /> {a.name}</button>
           ))}
         </div>
       </div>
@@ -120,19 +121,19 @@ export default function Movimientos() {
       <div className="card">
         {data.movements.length === 0 ? (
           <div className="empty">
-            <div className="e-ic">💸</div>
+            <div className="e-ic"><Icon name="receipt" /></div>
             <div className="e-t">Empieza a registrar</div>
             <div className="e-s">Agrega tu primer movimiento o carga datos de ejemplo.</div>
             <button className="btn-fill" onClick={() => openSheet({ kind: 'movement' })}>Agregar movimiento</button>
           </div>
         ) : rows.length === 0 ? (
-          <div className="empty"><div className="e-ic">🔍</div><div className="e-s" style={{ margin: 0 }}>Sin resultados.</div></div>
+          <div className="empty"><div className="e-ic"><Icon name="search" /></div><div className="e-s" style={{ margin: 0 }}>Sin resultados.</div></div>
         ) : rows.map((r) => {
           if (r.kind === 'transfer') {
             const dt = parseD(r.out.date).toLocaleDateString('es-MX', { day: 'numeric', month: 'short' })
             return (
               <div className="row" key={r.id}>
-                <IconSquare emoji="🔄" color={cssVar('--s1')} />
+                <IconSquare name="transfer" color={cssVar('--s1')} />
                 <div className="r-main"><div className="r-title">Transferencia</div><div className="r-sub">{accName(data, r.out.accountId)} → {accName(data, r.inMov.accountId)} · {dt}</div></div>
                 <div className="r-trail">
                   <span className="r-amt tnum" style={{ color: 'var(--label-2)' }}><Money value={r.out.amount} decimals /></span>
@@ -144,11 +145,11 @@ export default function Movimientos() {
           const m = r.m
           const col = m.type === 'in' ? cssVar('--green') : cssVar('--tint')
           const dt = parseD(m.date).toLocaleDateString('es-MX', { day: 'numeric', month: 'short' })
-          const rec = m.recurringId ? ' · 🔁' : ''
+          const rec = m.recurringId ? ' · ↻' : ''
           const sub = (m.note ? m.note + ' · ' : '') + dt + ' · ' + accName(data, m.accountId) + rec
           return (
             <div className="row tappable" key={m.id} onClick={() => openSheet({ kind: 'movement', id: m.id })}>
-              <IconSquare emoji={iconFor(m.category, m.type, data.cats)} color={col} />
+              <IconSquare name={iconFor(m.category, m.type, data.cats)} color={col} />
               <div className="r-main"><div className="r-title">{m.category}</div><div className="r-sub">{sub}</div></div>
               <div className="r-trail">
                 <span className={`r-amt ${m.type === 'in' ? 'in' : ''} tnum`}>{m.type === 'in' ? '+' : '−'}<Money value={m.amount} decimals /></span>

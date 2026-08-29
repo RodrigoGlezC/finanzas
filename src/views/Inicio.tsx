@@ -6,6 +6,7 @@ import { ACC_ICON, iconFor } from '../lib/constants'
 import { cap, cssVar, money, monthKey, mondayOf, ymd } from '../lib/format'
 import { uid } from '../lib/storage'
 import { IconSquare, MiniEmpty } from '../components/ui'
+import { Icon } from '../lib/icons'
 import BudgetRow from '../components/BudgetRow'
 import Money from '../components/Money'
 import type { Recurring } from '../types'
@@ -88,7 +89,7 @@ export default function Inicio() {
             </span>
           )}
         </div>
-        <div className="h-note">{!mv.length ? 'Sin movimientos en este periodo' : balance >= 0 ? 'Vas bien este periodo 🎉' : 'Estás gastando de más'}</div>
+        <div className="h-note">{!mv.length ? 'Sin movimientos en este periodo' : balance >= 0 ? 'Vas bien este periodo' : 'Estás gastando de más'}</div>
         <div className="ratio">
           {(ingresos > 0 || gastos > 0) && <span style={{ width: gp + '%', background: 'var(--red)' }} />}
           {sp > 0 && <span style={{ width: sp + '%', background: 'var(--green)' }} />}
@@ -104,7 +105,7 @@ export default function Inicio() {
         <div className="card" style={{ marginTop: 14 }}>
           {alerts.map((a, i) => (
             <div className="alert" key={i}>
-              <span className="al-ic">{a.level === 'over' ? '🔴' : '🟠'}</span>
+              <span className="al-ic" style={{ color: a.level === 'over' ? 'var(--red)' : 'var(--orange)' }}><Icon name="alert" /></span>
               <div style={{ flex: 1 }}>{a.text}</div>
             </div>
           ))}
@@ -115,7 +116,7 @@ export default function Inicio() {
         <>
           <div className="section-title">Disponible para gastar</div>
           <div className="avail-card">
-            <IconSquare emoji="💸" color={cssVar(avail.remaining >= 0 ? '--green' : '--red')} />
+            <IconSquare name="wallet" color={cssVar(avail.remaining >= 0 ? '--green' : '--red')} />
             <div className="av-main">
               <div className="av-lab">Te queda del presupuesto de {cap(anchor.toLocaleDateString('es-MX', { month: 'long' }))}</div>
               <div className="av-val tnum" style={{ color: avail.remaining >= 0 ? 'var(--label)' : 'var(--red-ink)' }}><Money value={avail.remaining} /></div>
@@ -131,14 +132,14 @@ export default function Inicio() {
           const bal = accBalance(data, a.id)
           return (
             <div className="row" key={a.id}>
-              <IconSquare emoji={ACC_ICON[a.type] || '👛'} color={cssVar('--tint')} />
+              <IconSquare name={ACC_ICON[a.type] || 'wallet'} color={cssVar('--tint')} />
               <div className="r-main"><div className="r-title">{a.name}</div><div className="r-sub">{cap(a.type)}</div></div>
               <div className="r-amt tnum" style={{ color: bal < 0 ? 'var(--red-ink)' : 'var(--label)' }}><Money value={bal} /></div>
             </div>
           )
         })}
         <div className="row tappable" onClick={() => openSheet({ kind: 'account' })}>
-          <span className="ic" style={{ background: 'var(--fill)' }}>＋</span>
+          <span className="ic" style={{ background: 'var(--fill)', color: 'var(--tint)' }}><Icon name="plus" /></span>
           <div className="r-main"><div className="r-title" style={{ color: 'var(--tint)' }}>Añadir cuenta</div></div>
         </div>
       </div>
@@ -152,7 +153,7 @@ export default function Inicio() {
               const dd = date.toLocaleDateString('es-MX', { day: 'numeric', month: 'short' })
               return (
                 <div className="row" key={i}>
-                  <IconSquare emoji={iconFor(r.category, r.type, data.cats)} color={col} />
+                  <IconSquare name={iconFor(r.category, r.type, data.cats)} color={col} />
                   <div className="r-main"><div className="r-title">{r.category}</div><div className="r-sub">Vence {dd} · {money(r.amount)}</div></div>
                   <button className="pill-btn" onClick={() => pagar(r, date)}>{r.type === 'in' ? 'Registrar' : 'Pagar'}</button>
                 </div>
@@ -166,7 +167,7 @@ export default function Inicio() {
       <div className="card">
         {miniBudgets.length === 0 ? (
           <div className="row tappable" onClick={() => { setView('presupuestos'); openSheet({ kind: 'budget' }) }}>
-            <span className="ic" style={{ background: 'var(--fill)' }}>🎯</span>
+            <span className="ic" style={{ background: 'var(--fill)', color: 'var(--tint)' }}><Icon name="target" /></span>
             <div className="r-main"><div className="r-title" style={{ color: 'var(--tint)' }}>Crear un presupuesto</div><div className="r-sub">Define límites y recibe alertas</div></div>
           </div>
         ) : miniBudgets.map((b) => <BudgetRow key={b.c} cat={b.c} limit={b.limit} spent={b.spent} cats={data.cats} />)}
@@ -174,12 +175,12 @@ export default function Inicio() {
 
       <div className="section-title">Gastos por categoría {catRows.length > 6 && <button className="act" onClick={() => { setFilter('out'); setView('movimientos') }}>Ver todos ›</button>}</div>
       <div className="card">
-        {catRows.length === 0 ? <MiniEmpty icon="🧾" text="Aún no hay gastos este periodo. Toca + para registrar el primero." /> : catRows.slice(0, 6).map(([name, val]) => {
+        {catRows.length === 0 ? <MiniEmpty icon="receipt" text="Aún no hay gastos este periodo. Toca + para registrar el primero." /> : catRows.slice(0, 6).map(([name, val]) => {
           const pct = Math.max(4, (val / catMax) * 100)
           const share = Math.round((val / catTotal) * 100)
           return (
             <div className="catrow" key={name}>
-              <IconSquare emoji={iconFor(name, 'out', data.cats)} color={cssVar('--tint')} />
+              <IconSquare name={iconFor(name, 'out', data.cats)} color={cssVar('--tint')} />
               <div className="cbody">
                 <div className="cline"><span className="cname">{name}</span><span className="cval tnum"><Money value={val} /><small>{share}%</small></span></div>
                 <div className="track"><span style={{ width: pct + '%', background: 'var(--tint)' }} /></div>

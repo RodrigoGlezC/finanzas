@@ -3,6 +3,7 @@ import { useStore } from '../store'
 import Sheet from '../components/Sheet'
 import Keypad, { applyKey } from '../components/Keypad'
 import { iconFor } from '../lib/constants'
+import { Icon } from '../lib/icons'
 import { lastAccountId, lastCategoryFor } from '../lib/calc'
 import { parseD, startOfToday, ymd } from '../lib/format'
 import { uid } from '../lib/storage'
@@ -74,7 +75,7 @@ export default function MovementSheet({ id }: { id?: string }) {
         <div className="catchips">
           {cats.map((c) => (
             <button key={c.name} className={`catchip ${catValue === c.name ? 'on' : ''}`} onClick={() => setCategory(c.name)}>
-              <span className="ci">{iconFor(c.name, type, data.cats)}</span>{c.name}
+              <span className="ci"><Icon name={iconFor(c.name, type, data.cats)} /></span>{c.name}
             </button>
           ))}
         </div>

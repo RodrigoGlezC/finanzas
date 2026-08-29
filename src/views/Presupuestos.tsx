@@ -1,6 +1,7 @@
 import { useStore } from '../store'
 import { goalSaved, avgMonthlySavings, spentByCatMonth } from '../lib/calc'
 import { cssVar, money } from '../lib/format'
+import { Icon } from '../lib/icons'
 import BudgetRow from '../components/BudgetRow'
 
 export default function Presupuestos() {
@@ -31,7 +32,7 @@ export default function Presupuestos() {
           <div className="section-title">Presupuestos del mes <button className="act" onClick={() => openSheet({ kind: 'budget' })}>+ Añadir</button></div>
           {rows.length === 0 ? (
             <div className="card"><div className="empty">
-              <div className="e-ic">🎯</div><div className="e-t">Sin presupuestos</div>
+              <div className="e-ic"><Icon name="target" /></div><div className="e-t">Sin presupuestos</div>
               <div className="e-s">Define un límite mensual por categoría y te avisamos cuando te acerques.</div>
               <button className="btn-fill" onClick={() => openSheet({ kind: 'budget' })}>Crear presupuesto</button>
             </div></div>
@@ -52,7 +53,7 @@ export default function Presupuestos() {
           )}
           {data.goals.length === 0 ? (
             <div className="card"><div className="empty">
-              <div className="e-ic">🎯</div><div className="e-t">Sin metas todavía</div>
+              <div className="e-ic"><Icon name="target" /></div><div className="e-t">Sin metas todavía</div>
               <div className="e-s">Crea una meta de ahorro y sigue tu progreso mes a mes.</div>
               <button className="btn-fill" onClick={() => openSheet({ kind: 'goal' })}>Nueva meta</button>
             </div></div>
@@ -69,7 +70,7 @@ export default function Presupuestos() {
                   <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', gap: 10 }}>
                     <div>
                       <div style={{ fontSize: 17, fontWeight: 600 }}>{g.name}</div>
-                      <div className="r-sub" style={{ marginTop: 2 }}>{money(sv)} de {money(g.target)} {done ? '· ¡completada! 🎉' : ''}</div>
+                      <div className="r-sub" style={{ marginTop: 2 }}>{money(sv)} de {money(g.target)} {done ? ' · ¡completada!' : ''}</div>
                     </div>
                     <div style={{ fontSize: 20, fontWeight: 700, color: col }}>{Math.round(pct)}%</div>
                   </div>

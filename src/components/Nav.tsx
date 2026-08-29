@@ -1,5 +1,6 @@
 import { useStore } from '../store'
 import { getPeriod } from '../lib/period'
+import { Icon } from '../lib/icons'
 
 const TITLES: Record<string, string> = {
   inicio: 'Inicio', movimientos: 'Movimientos', presupuestos: 'Presupuestos',
@@ -35,7 +36,7 @@ export default function Nav() {
           <button className={periodMode === 'month' ? 'on' : ''} onClick={() => setPeriodMode('month')}>Mes</button>
         </div>
         <div className="grow" />
-        <button className="navbtn" onClick={toggleTheme} title="Tema" aria-label={theme === 'dark' ? 'Cambiar a tema claro' : 'Cambiar a tema oscuro'}>{theme === 'dark' ? '☀️' : '🌙'}</button>
+        <button className="navbtn" onClick={toggleTheme} title="Tema" aria-label={theme === 'dark' ? 'Cambiar a tema claro' : 'Cambiar a tema oscuro'}><Icon name={theme === 'dark' ? 'sun' : 'moon'} /></button>
       </div>
     </div>
   )

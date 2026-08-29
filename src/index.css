@@ -344,3 +344,18 @@
   .iconopt:active{transform:scale(.92)}
   .iconopt.on{border-color:var(--tint);background:color-mix(in srgb,var(--tint) 14%,transparent)}
   @media(max-width:400px){.iconpick{grid-template-columns:repeat(6,1fr)}}
+
+  /* ===== Íconos SVG (set monocromo tipo SF Symbols) ===== */
+  .ic svg{width:22px;height:22px}
+  .ic.sm svg{width:18px;height:18px}
+  .ci svg{width:16px;height:16px}
+  .me-ic svg{width:26px;height:26px}
+  .bk-ic svg{width:19px;height:19px}
+  .empty .e-ic{display:flex;justify-content:center;color:var(--label-2);line-height:0;margin-bottom:12px}
+  .empty .e-ic svg{width:40px;height:40px;stroke-width:1.5}
+  .iconopt.on{color:var(--tint)}
+  .iconopt svg{width:22px;height:22px}
+  .chip{display:inline-flex;align-items:center;gap:6px}
+  .chip svg{width:15px;height:15px}
+  .si svg{width:15px;height:15px}
+  .al-ic svg{width:17px;height:17px;display:block}

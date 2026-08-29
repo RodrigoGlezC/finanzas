@@ -27,7 +27,7 @@ export default function AporteSheet({ goalId }: { goalId: string }) {
     commit((st) => {
       if (!st.cats.some((c) => c.name === cat)) {
         if (!st.groups.includes('Ahorros')) st.groups.splice(Math.max(0, st.groups.length - 1), 0, 'Ahorros')
-        st.cats.push({ name: cat, group: 'Ahorros', icon: '🐷' })
+        st.cats.push({ name: cat, group: 'Ahorros', icon: 'piggy' })
       }
       st.movements.push({ id: uid('m_'), type: 'out', amount: amt, category: cat, date, note: 'Meta: ' + goal!.name, accountId, goalId: goal!.id, _c: Date.now() })
     })

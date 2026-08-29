@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import { useStore } from '../store'
 import Sheet from '../components/Sheet'
-import { CATEGORY_ICONS } from '../lib/constants'
+import { Icon, PICKER_ICONS } from '../lib/icons'
 
 export default function CategorySheet({ name }: { name?: string }) {
   const data = useStore((s) => s.data)
@@ -72,8 +72,8 @@ export default function CategorySheet({ name }: { name?: string }) {
       <div className="glabel" style={{ margin: '0 6px 8px' }}>Ícono</div>
       <div className="iconpick">
         <button type="button" className={`iconopt ${!icon ? 'on' : ''}`} onClick={() => setIcon('')} title="Sin ícono">∅</button>
-        {CATEGORY_ICONS.map((ic) => (
-          <button key={ic} type="button" className={`iconopt ${icon === ic ? 'on' : ''}`} onClick={() => setIcon(ic)}>{ic}</button>
+        {PICKER_ICONS.map((ic) => (
+          <button key={ic} type="button" className={`iconopt ${icon === ic ? 'on' : ''}`} onClick={() => setIcon(ic)} aria-label={ic}><Icon name={ic} /></button>
         ))}
       </div>
       {editing && <button className="btn-soft" style={{ width: '100%', color: 'var(--red)', marginTop: 14 }} onClick={del}>Eliminar categoría</button>}

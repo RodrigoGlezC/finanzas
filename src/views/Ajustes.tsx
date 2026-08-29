@@ -6,6 +6,7 @@ import { ACC_ICON, WEEKDAYS, iconFor } from '../lib/constants'
 import { cap, cssVar, money, tint } from '../lib/format'
 import { STORE_KEY } from '../lib/constants'
 import { IconSquare } from '../components/ui'
+import { Icon } from '../lib/icons'
 import { clearAll, exportCsv, exportJson, importJson, loadExample } from '../lib/dataOps'
 
 export default function Ajustes() {
@@ -39,8 +40,8 @@ export default function Ajustes() {
           const freq = r.freq === 'mensual' ? `Día ${r.day} de cada mes` : `Cada ${WEEKDAYS[(r.day || 1) - 1]}`
           return (
             <div className="row tappable" key={r.id} onClick={() => openSheet({ kind: 'recurring', id: r.id })}>
-              <IconSquare emoji={iconFor(r.category, r.type, data.cats)} color={col} />
-              <div className="r-main"><div className="r-title">{r.category} {r.active === false ? '· ⏸️' : ''}</div><div className="r-sub">{freq} · {accName(data, r.accountId)}</div></div>
+              <IconSquare name={iconFor(r.category, r.type, data.cats)} color={col} />
+              <div className="r-main"><div className="r-title">{r.category}{r.active === false ? ' · en pausa' : ''}</div><div className="r-sub">{freq} · {accName(data, r.accountId)}</div></div>
               <div className="r-trail"><span className="r-amt tnum">{money(r.amount)}</span><span className="chev">›</span></div>
             </div>
           )
@@ -51,7 +52,7 @@ export default function Ajustes() {
       <div className="card">
         {data.accounts.map((a) => (
           <div className="row tappable" key={a.id} onClick={() => openSheet({ kind: 'account', id: a.id })}>
-            <IconSquare emoji={ACC_ICON[a.type] || '👛'} color={cssVar('--tint')} />
+            <IconSquare name={ACC_ICON[a.type] || 'wallet'} color={cssVar('--tint')} />
             <div className="r-main"><div className="r-title">{a.name}</div><div className="r-sub">{cap(a.type)} · saldo {money(accBalance(data, a.id))}</div></div>
             <span className="chev">›</span>
           </div>
@@ -65,7 +66,7 @@ export default function Ajustes() {
             <div className="glabel" style={{ padding: '12px 16px 4px' }}>{g}</div>
             {catsByGroup[g].map((c) => (
               <div className="row tappable" key={c.name} onClick={() => openSheet({ kind: 'category', name: c.name })}>
-                <IconSquare emoji={iconFor(c.name, g === 'Ingresos' ? 'in' : 'out', data.cats)} color={g === 'Ingresos' ? cssVar('--green') : cssVar('--tint')} />
+                <IconSquare name={iconFor(c.name, g === 'Ingresos' ? 'in' : 'out', data.cats)} color={g === 'Ingresos' ? cssVar('--green') : cssVar('--tint')} />
                 <div className="r-main"><div className="r-title">{c.name}</div></div>
                 <div className="r-trail">
                   {usedCats.has(c.name) && <span className="r-sub">en uso</span>}
@@ -82,12 +83,12 @@ export default function Ajustes() {
           <div className="section-title">Cuenta</div>
           <div className="card">
             <div className="row">
-              <IconSquare emoji="👤" color={cssVar('--tint')} />
+              <IconSquare name="user" color={cssVar('--tint')} />
               <div className="r-main"><div className="r-title">{session.user.email || 'Mi cuenta'}</div><div className="r-sub">Datos en la nube</div></div>
               {cloudStatus === 'ok' ? <span className="badge ok">Sincronizado</span> : cloudStatus === 'off' ? <span className="badge warn">Sin conexión</span> : null}
             </div>
             <div className="row tappable" onClick={logout}>
-              <span className="ic" style={{ background: tint(cssVar('--red'), 15) }}>🚪</span>
+              <span className="ic" style={{ background: tint(cssVar('--red'), 15), color: 'var(--red)' }}><Icon name="logout" /></span>
               <div className="r-main"><div className="r-title" style={{ color: 'var(--red)' }}>Cerrar sesión</div></div>
               <span className="chev">›</span>
             </div>
@@ -97,11 +98,11 @@ export default function Ajustes() {
 
       <div className="section-title">Datos</div>
       <div className="card">
-        <div className="row tappable" onClick={exportJson}><span className="ic" style={{ background: 'var(--fill)' }}>⬇️</span><div className="r-main"><div className="r-title">Exportar respaldo (JSON)</div><div className="r-sub">Guarda una copia de todo</div></div><span className="chev">›</span></div>
-        <div className="row tappable" onClick={() => fileRef.current?.click()}><span className="ic" style={{ background: 'var(--fill)' }}>⬆️</span><div className="r-main"><div className="r-title">Importar respaldo</div><div className="r-sub">Restaura desde un archivo</div></div><span className="chev">›</span></div>
-        <div className="row tappable" onClick={exportCsv}><span className="ic" style={{ background: 'var(--fill)' }}>📄</span><div className="r-main"><div className="r-title">Exportar periodo a CSV</div></div><span className="chev">›</span></div>
-        <div className="row tappable" onClick={loadExample}><span className="ic" style={{ background: 'var(--fill)' }}>✨</span><div className="r-main"><div className="r-title">Cargar datos de ejemplo</div></div><span className="chev">›</span></div>
-        <div className="row tappable" onClick={clearAll}><span className="ic" style={{ background: tint(cssVar('--red'), 15) }}>🗑️</span><div className="r-main"><div className="r-title" style={{ color: 'var(--red)' }}>Borrar todos los datos</div></div><span className="chev">›</span></div>
+        <div className="row tappable" onClick={exportJson}><span className="ic" style={{ background: 'var(--fill)', color: 'var(--label-2)' }}><Icon name="download" /></span><div className="r-main"><div className="r-title">Exportar respaldo (JSON)</div><div className="r-sub">Guarda una copia de todo</div></div><span className="chev">›</span></div>
+        <div className="row tappable" onClick={() => fileRef.current?.click()}><span className="ic" style={{ background: 'var(--fill)', color: 'var(--label-2)' }}><Icon name="upload" /></span><div className="r-main"><div className="r-title">Importar respaldo</div><div className="r-sub">Restaura desde un archivo</div></div><span className="chev">›</span></div>
+        <div className="row tappable" onClick={exportCsv}><span className="ic" style={{ background: 'var(--fill)', color: 'var(--label-2)' }}><Icon name="file" /></span><div className="r-main"><div className="r-title">Exportar periodo a CSV</div></div><span className="chev">›</span></div>
+        <div className="row tappable" onClick={loadExample}><span className="ic" style={{ background: 'var(--fill)', color: 'var(--tint)' }}><Icon name="sparkle" /></span><div className="r-main"><div className="r-title">Cargar datos de ejemplo</div></div><span className="chev">›</span></div>
+        <div className="row tappable" onClick={clearAll}><span className="ic" style={{ background: tint(cssVar('--red'), 15), color: 'var(--red)' }}><Icon name="trash" /></span><div className="r-main"><div className="r-title" style={{ color: 'var(--red)' }}>Borrar todos los datos</div></div><span className="chev">›</span></div>
       </div>
       <div style={{ textAlign: 'center', color: 'var(--label-3)', fontSize: 12, marginTop: 22 }}>Finanzas · {CLOUD ? 'sincronizado en la nube' : 'datos en este dispositivo'}</div>
 

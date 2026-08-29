@@ -1,5 +1,6 @@
 import type { AppState } from '../types'
 import { DEFAULT_CATS, DEFAULT_GROUPS, STORE_KEY, LAST_BACKUP_KEY } from './constants'
+import { normalizeIconKey } from './icons'
 
 export function uid(p = ''): string {
   return p + Date.now().toString(36) + Math.random().toString(36).slice(2, 6)
@@ -29,6 +30,8 @@ export function migrate(d: any): AppState {
   // Un array vacío es intencional (usuario nuevo o que borró todas sus categorías):
   // se respeta. Sólo se siembran los defaults cuando el campo NO existe (datos legacy).
   d.cats = Array.isArray(d.cats) ? d.cats : DEFAULT_CATS.slice()
+  // Íconos: migra los emoji históricos a claves del set SVG (idempotente).
+  d.cats.forEach((c: any) => { if (c && c.icon) c.icon = normalizeIconKey(c.icon) })
   d.groups = Array.isArray(d.groups) ? d.groups : DEFAULT_GROUPS.slice()
   if (!d.accounts || !d.accounts.length) {
     d.accounts = [{ id: 'acc_efvo', name: 'Efectivo', type: 'efectivo', opening: 0 }]

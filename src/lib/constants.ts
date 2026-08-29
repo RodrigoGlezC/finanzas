@@ -1,11 +1,5 @@
 import type { Category, MovType } from '../types'
 
-export const CATEGORY_ICONS = [
-  '🛒', '🏠', '🚌', '🚗', '⛽', '🧺', '💡', '📱', '📶', '🛍️', '👕', '👟', '💊', '🩺', '🏥',
-  '🎧', '☁️', '✨', '🐷', '🏦', '💵', '💳', '➕', '🍔', '🍕', '☕', '🍺', '🎬', '🎮', '📚',
-  '✈️', '🏖️', '🎁', '🐶', '🐱', '💇', '🏋️', '⚽', '🎵', '🧾', '💼', '🔧', '🌱', '❤️', '⭐',
-] as const
-
 export const STORE_KEY = 'micontrolgastos_v1'
 export const THEME_KEY = 'mcg_theme'
 export const LAST_BACKUP_KEY = 'mcg_lastBackup'
@@ -40,20 +34,22 @@ export const DEFAULT_CATS: Category[] = [
   { name: 'Ingreso Extra', group: 'Ingresos' },
 ]
 
+// Íconos por defecto por nombre de categoría (claves del set SVG en lib/icons).
 export const ICONS: Record<string, string> = {
-  Despensa: '🛒', Renta: '🏠', Transporte: '🚌', Lavandería: '🧺', Servicios: '💡',
-  Celular: '📱', Recargas: '📶', 'Compras Personales': '🛍️', Salud: '🩺',
-  Spotify: '🎧', iCloud: '☁️', Claude: '✨', Ahorro: '🐷', 'Ahorro Personal': '🏦',
-  Sueldo: '💵', 'Ingreso Extra': '➕',
+  Despensa: 'cart', Renta: 'home', Transporte: 'bus', Lavandería: 'laundry', Servicios: 'bulb',
+  Celular: 'phone', Recargas: 'wifi', 'Compras Personales': 'bag', Salud: 'stethoscope',
+  Spotify: 'headphones', iCloud: 'cloud', Claude: 'sparkle', Ahorro: 'piggy', 'Ahorro Personal': 'bank',
+  Sueldo: 'cash', 'Ingreso Extra': 'plus',
 }
 
 export const ACC_ICON: Record<string, string> = {
-  efectivo: '💵', tarjeta: '💳', banco: '🏦', otros: '👛',
+  efectivo: 'cash', tarjeta: 'card', banco: 'bank', otros: 'wallet',
 }
 
 export const WEEKDAYS = ['lunes', 'martes', 'miércoles', 'jueves', 'viernes', 'sábado', 'domingo']
 
+/** Devuelve la CLAVE de ícono (no un emoji) para una categoría. Ver lib/icons. */
 export function iconFor(cat: string, type: MovType, cats?: Category[]): string {
   const custom = cats?.find((c) => c.name === cat)?.icon
-  return custom || ICONS[cat] || (type === 'in' ? '💰' : '💳')
+  return custom || ICONS[cat] || (type === 'in' ? 'coins' : 'tag')
 }
