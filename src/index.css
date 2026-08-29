@@ -15,6 +15,8 @@
     --space-1:4px; --space-2:8px; --space-3:12px; --space-4:16px; --space-5:20px; --space-6:24px; --space-8:32px;
     /* Escala tipográfica (D2) */
     --text-xs:12px; --text-sm:13px; --text-base:15px; --text-md:16px; --text-lg:17px; --text-xl:19px; --text-2xl:22px; --text-3xl:28px;
+    /* Jerarquía numérica (Money) */
+    --money-symbol:var(--label-2); --money-decimals:var(--label-2);
   }
   :root[data-theme="dark"]{
     color-scheme:dark;
@@ -36,6 +38,9 @@
     -webkit-font-smoothing:antialiased; padding-bottom:calc(64px + env(safe-area-inset-bottom));
   }
   .tnum{font-variant-numeric:tabular-nums}
+  .money{font-variant-numeric:tabular-nums;white-space:nowrap;letter-spacing:inherit}
+  .money .m-sym{color:var(--money-symbol);margin-right:1.5px;font-weight:inherit}
+  .money .m-frac{color:var(--money-decimals);font-size:.62em;margin-left:.5px;font-weight:inherit}
   button{font-family:inherit;letter-spacing:inherit}
 
   /* NAV */

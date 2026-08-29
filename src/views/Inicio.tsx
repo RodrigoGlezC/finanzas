@@ -7,6 +7,7 @@ import { cap, colorForName, cssVar, money, monthKey, mondayOf, ymd } from '../li
 import { uid } from '../lib/storage'
 import { IconSquare, MiniEmpty } from '../components/ui'
 import BudgetRow from '../components/BudgetRow'
+import Money from '../components/Money'
 import type { Recurring } from '../types'
 
 export default function Inicio() {
@@ -79,7 +80,7 @@ export default function Inicio() {
         <div className="h-lead">
           <div>
             <div className="h-lab">{!mv.length ? 'Tu balance' : balance >= 0 ? 'Te sobran' : 'Te faltan'}</div>
-            <div className="h-amt tnum" style={{ color: balance >= 0 ? 'var(--label)' : 'var(--red-ink)' }}>{money(Math.abs(balance))}</div>
+            <div className="h-amt tnum" style={{ color: balance >= 0 ? 'var(--label)' : 'var(--red-ink)' }}><Money value={Math.abs(balance)} decimals /></div>
           </div>
           {deltaPct !== null && (
             <span className={`h-delta ${deltaPct >= 0 ? 'up' : 'down'}`} aria-label={`${deltaPct >= 0 ? 'Subió' : 'Bajó'} ${Math.abs(deltaPct)}% vs. periodo anterior`}>
@@ -93,9 +94,9 @@ export default function Inicio() {
           {sp > 0 && <span style={{ width: sp + '%', background: 'var(--green)' }} />}
         </div>
         <div className="hstats">
-          <div className="hstat"><div className="s-top"><span className="dot" style={{ background: 'var(--green)' }} />Ingresos</div><div className="s-val tnum">{money(ingresos)}</div></div>
-          <div className="hstat"><div className="s-top"><span className="dot" style={{ background: 'var(--red)' }} />Gastos</div><div className="s-val tnum">{money(gastos)}</div></div>
-          <div className="hstat"><div className="s-top"><span className="dot" style={{ background: 'var(--s7)' }} />Ahorro</div><div className="s-val tnum">{money(ahorro)}</div></div>
+          <div className="hstat"><div className="s-top"><span className="dot" style={{ background: 'var(--green)' }} />Ingresos</div><div className="s-val tnum"><Money value={ingresos} /></div></div>
+          <div className="hstat"><div className="s-top"><span className="dot" style={{ background: 'var(--red)' }} />Gastos</div><div className="s-val tnum"><Money value={gastos} /></div></div>
+          <div className="hstat"><div className="s-top"><span className="dot" style={{ background: 'var(--s7)' }} />Ahorro</div><div className="s-val tnum"><Money value={ahorro} /></div></div>
         </div>
       </div>
 
@@ -117,7 +118,7 @@ export default function Inicio() {
             <IconSquare emoji="💸" color={cssVar(avail.remaining >= 0 ? '--green' : '--red')} />
             <div className="av-main">
               <div className="av-lab">Te queda del presupuesto de {cap(anchor.toLocaleDateString('es-MX', { month: 'long' }))}</div>
-              <div className="av-val tnum" style={{ color: avail.remaining >= 0 ? 'var(--label)' : 'var(--red-ink)' }}>{money(avail.remaining)}</div>
+              <div className="av-val tnum" style={{ color: avail.remaining >= 0 ? 'var(--label)' : 'var(--red-ink)' }}><Money value={avail.remaining} /></div>
               <div className="av-day">{avail.remaining > 0 ? `~${money(avail.perDay)} por día los próximos ${avail.daysLeft} días` : 'Ya no queda presupuesto este mes'}</div>
             </div>
           </div>
@@ -132,7 +133,7 @@ export default function Inicio() {
             <div className="row" key={a.id}>
               <IconSquare emoji={ACC_ICON[a.type] || '👛'} color={cssVar('--tint')} />
               <div className="r-main"><div className="r-title">{a.name}</div><div className="r-sub">{cap(a.type)}</div></div>
-              <div className="r-amt tnum" style={{ color: bal < 0 ? 'var(--red-ink)' : 'var(--label)' }}>{money(bal)}</div>
+              <div className="r-amt tnum" style={{ color: bal < 0 ? 'var(--red-ink)' : 'var(--label)' }}><Money value={bal} /></div>
             </div>
           )
         })}
@@ -174,15 +175,14 @@ export default function Inicio() {
       <div className="section-title">Gastos por categoría {catRows.length > 6 && <button className="act" onClick={() => { setFilter('out'); setView('movimientos') }}>Ver todos ›</button>}</div>
       <div className="card">
         {catRows.length === 0 ? <MiniEmpty text="Sin gastos en este periodo" /> : catRows.slice(0, 6).map(([name, val]) => {
-          const col = colorForName(name)
           const pct = Math.max(4, (val / catMax) * 100)
           const share = Math.round((val / catTotal) * 100)
           return (
             <div className="catrow" key={name}>
-              <IconSquare emoji={iconFor(name, 'out', data.cats)} color={col} />
+              <IconSquare emoji={iconFor(name, 'out', data.cats)} color={cssVar('--tint')} />
               <div className="cbody">
-                <div className="cline"><span className="cname">{name}</span><span className="cval tnum">{money(val)}<small>{share}%</small></span></div>
-                <div className="track"><span style={{ width: pct + '%', background: col }} /></div>
+                <div className="cline"><span className="cname">{name}</span><span className="cval tnum"><Money value={val} /><small>{share}%</small></span></div>
+                <div className="track"><span style={{ width: pct + '%', background: 'var(--tint)' }} /></div>
               </div>
             </div>
           )
