@@ -10,6 +10,16 @@ export default function Reportes() {
   const anchorMs = useStore((s) => s.anchor)
   const year = new Date(anchorMs).getFullYear()
 
+  if (!data.movements.length) {
+    return (
+      <div className="card"><div className="empty">
+        <div className="e-ic">📊</div>
+        <div className="e-t">Sin datos todavía</div>
+        <div className="e-s">Registra tus primeros movimientos y aquí verás tu evolución, comparativas y el resumen del año. Toca + para empezar.</div>
+      </div></div>
+    )
+  }
+
   const S = monthlySeries(data, 6)
   const cur = S[S.length - 1]
   const prev = S[S.length - 2] || { in: 0, out: 0 }

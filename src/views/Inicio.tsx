@@ -174,7 +174,7 @@ export default function Inicio() {
 
       <div className="section-title">Gastos por categoría {catRows.length > 6 && <button className="act" onClick={() => { setFilter('out'); setView('movimientos') }}>Ver todos ›</button>}</div>
       <div className="card">
-        {catRows.length === 0 ? <MiniEmpty text="Sin gastos en este periodo" /> : catRows.slice(0, 6).map(([name, val]) => {
+        {catRows.length === 0 ? <MiniEmpty icon="🧾" text="Aún no hay gastos este periodo. Toca + para registrar el primero." /> : catRows.slice(0, 6).map(([name, val]) => {
           const pct = Math.max(4, (val / catMax) * 100)
           const share = Math.round((val / catTotal) * 100)
           return (

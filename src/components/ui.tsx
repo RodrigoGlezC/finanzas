@@ -6,6 +6,11 @@ export function IconSquare({ emoji, color, small }: { emoji: string; color: stri
   )
 }
 
-export function MiniEmpty({ text }: { text: string }) {
-  return <div style={{ color: 'var(--label-2)', fontSize: 14, padding: '26px 16px', textAlign: 'center' }}>{text}</div>
+export function MiniEmpty({ text, icon }: { text: string; icon?: string }) {
+  return (
+    <div className="mini-empty">
+      {icon && <span className="me-ic" aria-hidden="true">{icon}</span>}
+      <span>{text}</span>
+    </div>
+  )
 }

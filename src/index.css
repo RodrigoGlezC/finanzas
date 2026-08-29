@@ -15,8 +15,6 @@
     --space-1:4px; --space-2:8px; --space-3:12px; --space-4:16px; --space-5:20px; --space-6:24px; --space-8:32px;
     /* Escala tipográfica (D2/Fase 3) */
     --text-2xs:11px; --text-xs:12px; --text-sm:13px; --text-base:15px; --text-md:16px; --text-lg:17px; --text-xl:19px; --text-2xl:22px; --text-3xl:28px;
-    /* Jerarquía numérica (Money) */
-    --money-symbol:var(--label-2); --money-decimals:var(--label-2);
   }
   :root[data-theme="dark"]{
     color-scheme:dark;
@@ -39,8 +37,8 @@
   }
   .tnum{font-variant-numeric:tabular-nums}
   .money{font-variant-numeric:tabular-nums;white-space:nowrap;letter-spacing:inherit}
-  .money .m-sym{color:var(--money-symbol);margin-right:1.5px;font-weight:inherit}
-  .money .m-frac{color:var(--money-decimals);font-size:.62em;margin-left:.5px;font-weight:inherit}
+  .money .m-sym{opacity:.55;margin-right:.5px;font-weight:inherit}
+  .money .m-frac{opacity:.6;font-size:.62em;font-weight:inherit}
   button{font-family:inherit;letter-spacing:inherit}
 
   /* NAV */
@@ -57,6 +55,8 @@
   .navbtn.add{background:var(--tint);color:#fff;font-size:22px}
 
   .wrap{max-width:720px;margin:0 auto;padding:14px 16px 40px}
+  .mini-empty{display:flex;flex-direction:column;align-items:center;gap:8px;color:var(--label-2);font-size:var(--text-sm);line-height:1.4;padding:26px 20px;text-align:center;max-width:280px;margin:0 auto}
+  .mini-empty .me-ic{font-size:26px;opacity:.7}
   .view-fade{animation:viewIn .22s ease}
   @keyframes viewIn{from{opacity:0;transform:translateY(5px)}to{opacity:1;transform:none}}
   @media(prefers-reduced-motion:reduce){.view-fade{animation:none}}
