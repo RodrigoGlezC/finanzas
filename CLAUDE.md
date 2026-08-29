@@ -29,13 +29,13 @@ src/
 - Se guarda en `localStorage` y, en modo nube, en Supabase tabla `user_data` (fila por usuario: `user_id`, `data jsonb`, `updated_at`) con RLS por `auth.uid()`.
 - **Sync (A1, tier pragmática):** antes de cada push se hace *pull-y-merge* (`mergeStates` en `lib/sync.ts`) para no sobrescribir cambios de otro dispositivo. Movimientos: el doc con `updatedAt` más nuevo es autoritativo y del más viejo se añaden los ids que no conoce (unión aditiva), con **tombstones** (`deleted: {id->ms}`) para que un borrado real no resucite; la presencia en el doc nuevo manda sobre el tombstone (deshacer gana). Resto de colecciones: última-escritura-gana por documento. Realtime opcional refresca al recibir cambios de otro dispositivo (requiere activar Realtime en `user_data`). Los borrados de movimiento registran tombstone en `delMov`/`delTransfer`/`clearAll` (y el deshacer lo quita).
 - `Movement`: `{id,type:'in'|'out',amount,category,date,note,accountId,recurringId?,period?,goalId?,transfer?,transferId?,_c}`
-- `Category`: `{name, group, icon?}`. Cada usuario tiene SUS categorías (parten de `DEFAULT_CATS`, totalmente editables).
+- `Category`: `{name, group, icon?}`. Cada usuario tiene SUS categorías (parten de `DEFAULT_CATS`, totalmente editables). `icon` es una **clave** del set SVG en `lib/icons.tsx` (p. ej. `'cart'`, `'home'`), NO un emoji. `migrate()` convierte emoji históricos a claves con `normalizeIconKey`.
 
 ## Decisiones y gotchas (respétalas)
 - **Transferencias** entre cuentas = 2 movimientos enlazados por `transferId` con `transfer:true` y categoría `'Transferencia'`. Se EXCLUYEN de ingresos/gastos/presupuestos/reportes (filtro `!m.transfer`) pero SÍ afectan el saldo de las cuentas.
 - **Recurrentes**: `materializeRecurring()` genera los vencidos de forma idempotente por `recurringId+period`. Al borrar una ocurrencia se agrega su `period` a `r.skip` para que no reaparezca.
 - **Metas**: `goalSaved = goal.initial + suma de movimientos con goalId` (fuente única de verdad; borrar un aporte ajusta la meta sola).
-- `iconFor(cat, type, cats)` resuelve primero el icono personalizado de la categoría.
+- `iconFor(cat, type, cats)` devuelve la **clave** de ícono (custom de la categoría → `ICONS[nombre]` → default). Se renderiza con `<Icon name={clave}/>` de `lib/icons.tsx` (SVG monocromo `currentColor`, estilo SF Symbols). NO se usan emoji en la UI.
 - `migrate()` en `lib/storage.ts` hace migración idempotente sin perder datos: **cualquier campo nuevo del modelo se inicializa AHÍ**.
 - `commit(fn)` en el store clona el estado, aplica cambios, hace bump de `updatedAt`, guarda en local y hace push con debounce a la nube.
 - Presupuestos y reportes son **mensuales**.
