@@ -78,6 +78,9 @@
   .hero .h-delta.up{color:var(--green-ink)}
   .hero .h-delta.down{color:var(--red-ink)}
   .hero .h-note{font-size:var(--text-sm);color:var(--label-2)}
+  .hero .h-proj{display:flex;align-items:center;gap:7px;margin-top:10px;font-size:13px;color:var(--label-2);font-weight:500}
+  .hero .h-proj svg{color:var(--label-3);flex:0 0 auto}
+  .hero .h-proj b{font-weight:700;font-variant-numeric:tabular-nums}
   .ratio{height:8px;border-radius:var(--r-pill);background:var(--fill);overflow:hidden;margin:16px 0 14px;display:flex}
   .ratio>span{height:100%;display:block}
   .hstats{display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px}

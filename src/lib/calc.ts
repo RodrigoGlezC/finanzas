@@ -45,7 +45,16 @@ export function budgetSummary(state: AppState, anchor: Date) {
   const today = startOfToday()
   const isCurrentMonth = today.getFullYear() === y && today.getMonth() === m
   const daysLeft = isCurrentMonth ? Math.max(1, totalDays - today.getDate() + 1) : totalDays
-  return { hasBudgets: cats.length > 0, limitTotal, spentTotal, remaining, daysLeft, perDay: remaining > 0 ? remaining / daysLeft : 0 }
+  // El "por día" solo tiene sentido sobre gasto variable: las categorías cubiertas por un
+  // pago recurrente (fijo) están comprometidas, no son dinero repartible entre los días.
+  const fixed = new Set(state.recurring.filter((r) => r.type === 'out' && r.active !== false).map((r) => r.category))
+  const varCats = cats.filter((c) => !fixed.has(c))
+  const varRemaining = varCats.reduce((s, c) => s + state.budgets[c] - (spent[c] || 0), 0)
+  const hasFixed = varCats.length !== cats.length
+  return {
+    hasBudgets: cats.length > 0, limitTotal, spentTotal, remaining, daysLeft, hasFixed,
+    perDay: varRemaining > 0 ? varRemaining / daysLeft : 0,
+  }
 }
 
 export interface Alert { level: 'warn' | 'over' | 'info'; text: string }

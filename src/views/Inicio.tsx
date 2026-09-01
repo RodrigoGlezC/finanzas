@@ -1,7 +1,7 @@
 import { useStore } from '../store'
 import { getPeriod } from '../lib/period'
 import { accBalance, budgetAlerts, budgetSummary, catGroup, spentByCatMonth } from '../lib/calc'
-import { upcomingList } from '../lib/recurring'
+import { upcomingList, upcomingUntil } from '../lib/recurring'
 import { ACC_ICON, iconFor } from '../lib/constants'
 import { cap, cssVar, money, monthKey, mondayOf, ymd } from '../lib/format'
 import { uid } from '../lib/storage'
@@ -74,6 +74,13 @@ export default function Inicio() {
 
   const upcoming = upcomingList(data, 31).slice(0, 4)
 
+  // Proyección de cierre: saldo del periodo + recurrentes que aún vencen dentro de él.
+  // Solo para el periodo en curso (en pasados no vence nada; en futuros no aplica el saldo actual).
+  const isCurrentPeriod = P.inRange(ymd(new Date()))
+  const proj = isCurrentPeriod ? upcomingUntil(data, P.end) : []
+  const projNet = proj.reduce((s, u) => s + (u.r.type === 'in' ? u.r.amount : -u.r.amount), 0)
+  const projected = balance + projNet
+
   return (
     <>
       <div className="hero">
@@ -90,6 +97,12 @@ export default function Inicio() {
           )}
         </div>
         <div className="h-note">{!mv.length ? 'Sin movimientos en este periodo' : balance >= 0 ? 'Vas bien este periodo' : 'Estás gastando de más'}</div>
+        {proj.length > 0 && (
+          <div className="h-proj">
+            <Icon name="calendar" />
+            <span>Con {proj.length} {proj.length === 1 ? 'recurrente por venir' : 'recurrentes por venir'}, cerrarías en <b style={{ color: projected >= 0 ? 'var(--label)' : 'var(--red-ink)' }}><Money value={projected} /></b></span>
+          </div>
+        )}
         <div className="ratio">
           {(ingresos > 0 || gastos > 0) && <span style={{ width: gp + '%', background: 'var(--red)' }} />}
           {sp > 0 && <span style={{ width: sp + '%', background: 'var(--green)' }} />}
@@ -120,7 +133,13 @@ export default function Inicio() {
             <div className="av-main">
               <div className="av-lab">Te queda del presupuesto de {cap(anchor.toLocaleDateString('es-MX', { month: 'long' }))}</div>
               <div className="av-val tnum" style={{ color: avail.remaining >= 0 ? 'var(--label)' : 'var(--red-ink)' }}><Money value={avail.remaining} /></div>
-              <div className="av-day">{avail.remaining > 0 ? `~${money(avail.perDay)} por día los próximos ${avail.daysLeft} días` : 'Ya no queda presupuesto este mes'}</div>
+              <div className="av-day">{
+                avail.perDay > 0
+                  ? `~${money(avail.perDay)} por día${avail.hasFixed ? ' para el día a día' : ''} los próximos ${avail.daysLeft} días`
+                  : avail.remaining > 0
+                    ? 'Ya gastaste tu presupuesto variable este mes'
+                    : 'Ya no queda presupuesto este mes'
+              }</div>
             </div>
           </div>
         </>

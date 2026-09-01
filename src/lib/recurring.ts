@@ -55,6 +55,40 @@ export function materializeRecurring(state: AppState): number {
 
 export interface Upcoming { r: Recurring; date: Date }
 
+/** Clave de periodo de una ocurrencia (igual que en `pagar`/`materializeRecurring`). */
+function periodKey(r: Recurring, date: Date): string {
+  return r.freq === 'mensual' ? monthKey(date) : 'W' + ymd(mondayOf(date))
+}
+
+/**
+ * Ocurrencias de recurrentes con fecha en (hoy, end], excluyendo las que YA están
+ * registradas como movimiento (para no contarlas dos veces al proyectar el cierre).
+ */
+export function upcomingUntil(state: AppState, end: Date): Upcoming[] {
+  const today = startOfToday()
+  const out: Upcoming[] = []
+  const already = (r: Recurring, date: Date) =>
+    state.movements.some((m) => m.recurringId === r.id && m.period === periodKey(r, date))
+  state.recurring.filter((r) => r.active !== false).forEach((r) => {
+    if (r.freq === 'mensual') {
+      for (let k = 0; k < 2; k++) {
+        const base = new Date(today.getFullYear(), today.getMonth() + k, 1)
+        const day = Math.min(r.day || 1, daysInMonth(base.getFullYear(), base.getMonth()))
+        const date = new Date(base.getFullYear(), base.getMonth(), day)
+        if (date > today && date <= end && !already(r, date)) out.push({ r, date })
+      }
+    } else {
+      let d = mondayOf(today)
+      for (let k = 0; k < 6; k++) {
+        const date = addDays(d, (r.day || 1) - 1)
+        if (date > today && date <= end && !already(r, date)) out.push({ r, date })
+        d = addDays(d, 7)
+      }
+    }
+  })
+  return out.sort((a, b) => a.date.getTime() - b.date.getTime())
+}
+
 export function upcomingList(state: AppState, days = 31): Upcoming[] {
   const today = startOfToday()
   const limit = addDays(today, days)
