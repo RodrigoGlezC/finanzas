@@ -46,6 +46,7 @@ interface Store {
   signalBackup: () => void
   replaceData: (d: AppState, persist?: boolean) => void
   materializeNow: () => void
+  flushPush: () => void
 
   setView: (v: ViewName) => void
   setPeriodMode: (m: PeriodMode) => void
@@ -81,11 +82,12 @@ function schedulePush(getState: () => Store) {
       let data = getState().data
       const remote = await loadCloud(uid)
       if (remote) {
+        // Adopta SIEMPRE la fusión (no solo si cambió el conteo de movimientos):
+        // así no pisamos un movimiento nuevo del otro dispositivo cuando el conteo
+        // coincide pero el contenido difiere. Es lo mismo que hace el sync de login.
         const merged = mergeStates(remote, data)
-        if (merged.movements.length !== data.movements.length) {
-          getState().replaceData(merged)
-          data = merged
-        }
+        getState().replaceData(merged)
+        data = merged
       }
       await pushCloud(uid, data)
       getState().setCloudStatus('ok')
@@ -155,6 +157,10 @@ export const useStore = create<Store>((set, get) => ({
       schedulePush(get)
     }
   },
+
+  // Reintenta la sincronización (pull-merge-push) al recuperar conexión o foco:
+  // rescata cambios hechos sin red y trae los del otro dispositivo. Sin sesión, no hace nada.
+  flushPush: () => { if (CLOUD && get().session) schedulePush(get) },
 
   setView: (v) => set({ view: v }),
   setPeriodMode: (m) => set({

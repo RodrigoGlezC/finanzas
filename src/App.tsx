@@ -76,6 +76,21 @@ export default function App() {
     })()
   }, [session, replaceData, setCloudStatus, showToast])
 
+  // Reintento de sync al recuperar conexión o al volver a la app: si algo quedó sin
+  // subir (guardaste sin red) se empuja, y de paso se traen los cambios del otro
+  // dispositivo. flushPush no hace nada sin sesión, así que no depende de `session`.
+  useEffect(() => {
+    if (!CLOUD) return
+    const flush = () => useStore.getState().flushPush()
+    const onVisible = () => { if (document.visibilityState === 'visible') flush() }
+    window.addEventListener('online', flush)
+    document.addEventListener('visibilitychange', onVisible)
+    return () => {
+      window.removeEventListener('online', flush)
+      document.removeEventListener('visibilitychange', onVisible)
+    }
+  }, [])
+
   // Realtime: refresca cuando OTRO dispositivo empuja cambios. Requiere Realtime activo
   // en Supabase (Database → Replication → tabla user_data). Si no lo está, no dispara nada.
   useEffect(() => {
