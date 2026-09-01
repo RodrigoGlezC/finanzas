@@ -18,7 +18,7 @@ export default function BackupBanner() {
       <span className="bk-ic"><Icon name="shield" /></span>
       <div style={{ flex: 1 }}>{txt} Descarga una copia por seguridad.</div>
       <button className="btn-soft bk-btn" onClick={exportJson}>Respaldar</button>
-      <button className="bk-x" onClick={dismiss}>✕</button>
+      <button className="bk-x" aria-label="Descartar aviso" onClick={dismiss}><Icon name="close" /></button>
     </div>
   )
 }

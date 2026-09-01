@@ -7,14 +7,14 @@ export default function Toast() {
 
   useEffect(() => {
     if (!toast) return
-    const ms = toast.undo ? 5000 : 2300
+    const ms = toast.undo ? 7000 : 2300
     const t = setTimeout(clearToast, ms)
     return () => clearTimeout(t)
   }, [toast, clearToast])
 
   if (!toast) return null
   return (
-    <div className="toast show">
+    <div className="toast show" role="status" aria-live="polite" aria-atomic="true">
       <span>{toast.msg}</span>
       {toast.undo && (
         <button

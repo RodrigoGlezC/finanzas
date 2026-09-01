@@ -105,7 +105,7 @@
   .r-trail{text-align:right;display:flex;align-items:center;gap:8px}
   .r-amt{font-size:16px;font-weight:600;letter-spacing:-.02em;white-space:nowrap}
   .r-amt.in{color:var(--green-ink)}
-  .chev{color:var(--label-3);font-size:15px}
+  .chev{color:var(--label-3);font-size:16px;display:grid;place-items:center}
   .del{border:none;background:transparent;color:var(--label-3);cursor:pointer;font-size:15px;width:40px;height:44px;border-radius:var(--r-pill);display:grid;place-items:center}
   .row:hover .del{color:var(--red)} .del:active{background:var(--fill)}
 
@@ -245,7 +245,7 @@
   .banner{display:flex;align-items:center;gap:10px;background:color-mix(in srgb,var(--orange) 12%,var(--card));border:1px solid color-mix(in srgb,var(--orange) 32%,transparent);border-radius:var(--r-md);padding:11px 12px 11px 14px;margin:14px 0 -4px;font-size:14px;color:var(--label)}
   .banner .bk-ic{font-size:18px}
   .banner .bk-btn{padding:7px 12px;font-size:14px;flex:0 0 auto}
-  .banner .bk-x{border:none;background:transparent;color:var(--label-3);font-size:15px;cursor:pointer;padding:4px;flex:0 0 auto}
+  .banner .bk-x{border:none;background:transparent;color:var(--label-3);font-size:15px;cursor:pointer;padding:4px;flex:0 0 auto;display:grid;place-items:center}
   /* El toast siempre es superficie oscura → esmeralda de marca aclarada para contraste en ambos temas */
   .undo-btn{margin-left:14px;background:none;border:none;color:color-mix(in srgb,var(--tint) 55%,#fff);font:inherit;font-weight:700;cursor:pointer}
   /* ===== Auth · "Libro mayor" ===== */
@@ -322,7 +322,7 @@
   .catchip .ci{font-size:15px}
   .catchip.on{border-color:var(--tint);background:color-mix(in srgb,var(--tint) 12%,transparent);color:var(--tint);font-weight:600}
   .keypad{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:6px}
-  .key{border:none;background:var(--card);color:var(--label);font-size:24px;font-weight:500;padding:14px 0;border-radius:var(--r-md);cursor:pointer;box-shadow:var(--shadow-card);transition:.08s}
+  .key{border:none;background:var(--card);color:var(--label);font-size:24px;font-weight:500;padding:14px 0;border-radius:var(--r-md);cursor:pointer;box-shadow:var(--shadow-card);transition:.08s;display:grid;place-items:center}
   .key:active{background:var(--fill-2);transform:scale(.97)}
   .key.wide{grid-column:span 1}
   .accchips{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:14px}

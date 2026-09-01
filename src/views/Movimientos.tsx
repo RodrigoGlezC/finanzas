@@ -137,7 +137,7 @@ export default function Movimientos() {
                 <div className="r-main"><div className="r-title">Transferencia</div><div className="r-sub">{accName(data, r.out.accountId)} → {accName(data, r.inMov.accountId)} · {dt}</div></div>
                 <div className="r-trail">
                   <span className="r-amt tnum" style={{ color: 'var(--label-2)' }}><Money value={r.out.amount} decimals /></span>
-                  <button className="del" aria-label="Eliminar transferencia" onClick={() => delTransfer(r.id)}>✕</button>
+                  <button className="del" aria-label="Eliminar transferencia" onClick={() => delTransfer(r.id)}><Icon name="close" /></button>
                 </div>
               </div>
             )
@@ -153,7 +153,7 @@ export default function Movimientos() {
               <div className="r-main"><div className="r-title">{m.category}</div><div className="r-sub">{sub}</div></div>
               <div className="r-trail">
                 <span className={`r-amt ${m.type === 'in' ? 'in' : ''} tnum`}>{m.type === 'in' ? '+' : '−'}<Money value={m.amount} decimals /></span>
-                <button className="del" aria-label={`Eliminar ${m.category} de ${money(m.amount, true)}`} onClick={(e) => { e.stopPropagation(); delMov(m.id) }}>✕</button>
+                <button className="del" aria-label={`Eliminar ${m.category} de ${money(m.amount, true)}`} onClick={(e) => { e.stopPropagation(); delMov(m.id) }}><Icon name="close" /></button>
               </div>
             </div>
           )

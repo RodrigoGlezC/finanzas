@@ -82,6 +82,9 @@ const P: Record<string, ReactNode> = {
   moon: <><path d="M20 14.5A8.5 8.5 0 0 1 9.5 4 7.2 7.2 0 1 0 20 14.5z" /></>,
   user: <><circle cx="12" cy="8" r="4" /><path d="M4.5 20c0-3.6 3.4-6 7.5-6s7.5 2.4 7.5 6" /></>,
   alert: <><path d="M12 3.5 21.5 20H2.5L12 3.5z" /><path d="M12 10v4.4" /><path d="M12 17.6h.01" /></>,
+  backspace: <><path d="M8 5h11a2 2 0 0 1 2 2v10a2 2 0 0 1-2 2H8L2 12 8 5z" /><path d="M16 9.5l-5 5M11 9.5l5 5" /></>,
+  close: <><path d="M6 6l12 12M18 6 6 18" /></>,
+  chevron: <><path d="M9.5 5l7 7-7 7" /></>,
 }
 
 export type IconName = keyof typeof P

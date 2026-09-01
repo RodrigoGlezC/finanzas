@@ -1,9 +1,17 @@
+import { Icon } from '../lib/icons'
+
 export default function Keypad({ onKey }: { onKey: (k: string) => void }) {
   const keys = ['1', '2', '3', '4', '5', '6', '7', '8', '9', '.', '0', '⌫']
   return (
     <div className="keypad">
       {keys.map((k) => (
-        <button key={k} className="key" type="button" onClick={() => onKey(k)}>{k}</button>
+        <button
+          key={k} className="key" type="button"
+          aria-label={k === '⌫' ? 'Borrar' : undefined}
+          onClick={() => onKey(k)}
+        >
+          {k === '⌫' ? <Icon name="backspace" size={26} /> : k}
+        </button>
       ))}
     </div>
   )

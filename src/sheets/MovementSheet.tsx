@@ -5,7 +5,7 @@ import Keypad, { applyKey } from '../components/Keypad'
 import { iconFor } from '../lib/constants'
 import { Icon } from '../lib/icons'
 import { lastAccountId, lastCategoryFor } from '../lib/calc'
-import { parseD, startOfToday, ymd } from '../lib/format'
+import { addDays, fmtAmountInput, parseD, startOfToday, ymd } from '../lib/format'
 import { uid } from '../lib/storage'
 import type { MovType } from '../types'
 
@@ -51,14 +51,16 @@ export default function MovementSheet({ id }: { id?: string }) {
     closeSheet()
   }
 
-  const isToday = date === ymd(startOfToday())
+  const today = startOfToday()
+  const isToday = date === ymd(today)
+  const isYesterday = date === ymd(addDays(today, -1))
 
   return (
     <Sheet title={editing ? 'Editar' : 'Nuevo'} onClose={closeSheet} onSave={save}>
       <div className="amount-hero">
         <span className="cur">$</span>
-        <span style={{ fontSize: 50, fontWeight: 700, letterSpacing: '-.03em', color: amount ? 'var(--label)' : 'var(--label-3)' }}>
-          {amount || '0'}
+        <span className="tnum" style={{ fontSize: 50, fontWeight: 700, letterSpacing: '-.03em', color: amount ? 'var(--label)' : 'var(--label-3)' }}>
+          {amount ? fmtAmountInput(amount) : '0'}
         </span>
       </div>
       <div className="seg" style={{ marginBottom: 16 }}>
@@ -90,7 +92,8 @@ export default function MovementSheet({ id }: { id?: string }) {
       <div className="group">
         <div className="frow"><label>Fecha</label><div className="fctrl">
           <input type="date" value={date} onChange={(e) => setDate(e.target.value)} />
-          {!isToday && <button className="pill-btn soft" style={{ marginLeft: 8 }} onClick={() => setDate(ymd(startOfToday()))}>Hoy</button>}
+          {!isYesterday && <button className="pill-btn soft" style={{ marginLeft: 8 }} onClick={() => setDate(ymd(addDays(today, -1)))}>Ayer</button>}
+          {!isToday && <button className="pill-btn soft" style={{ marginLeft: 8 }} onClick={() => setDate(ymd(today))}>Hoy</button>}
         </div></div>
         <div className="frow"><label>Nota</label><div className="fctrl"><input type="text" placeholder="Opcional" value={note} onChange={(e) => setNote(e.target.value)} /></div></div>
       </div>

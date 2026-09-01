@@ -15,6 +15,19 @@ export function cap(s: string): string {
   return s ? s.charAt(0).toUpperCase() + s.slice(1) : s
 }
 
+/**
+ * Formatea el string crudo del keypad de monto (p. ej. "12500", "12500.", "12500.5")
+ * agrupando miles en la parte entera, sin tocar el valor interno usado por parseFloat.
+ * Conserva el punto decimal final y los decimales tal cual se están tecleando.
+ */
+export function fmtAmountInput(s: string): string {
+  if (!s) return ''
+  const dot = s.indexOf('.')
+  const intPart = dot === -1 ? s : s.slice(0, dot)
+  const grouped = intPart ? Number(intPart).toLocaleString('es-MX') : '0'
+  return dot === -1 ? grouped : grouped + '.' + s.slice(dot + 1)
+}
+
 /* ---------- fechas ---------- */
 export function startOfToday(): Date {
   const t = new Date()
