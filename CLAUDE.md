@@ -34,11 +34,13 @@ src/
 ## Decisiones y gotchas (respétalas)
 - **Transferencias** entre cuentas = 2 movimientos enlazados por `transferId` con `transfer:true` y categoría `'Transferencia'`. Se EXCLUYEN de ingresos/gastos/presupuestos/reportes (filtro `!m.transfer`) pero SÍ afectan el saldo de las cuentas.
 - **Recurrentes**: `materializeRecurring()` genera los vencidos de forma idempotente por `recurringId+period`. Al borrar una ocurrencia se agrega su `period` a `r.skip` para que no reaparezca.
+- **Proyección de cierre (Inicio)**: `upcomingUntil(state, end)` (`lib/recurring.ts`) lista las ocurrencias de recurrentes que aún vencen en `(hoy, end]`, **excluyendo las ya registradas** (mismo `recurringId+period` en `movements`) para no contarlas dos veces. Inicio la usa **solo en el periodo en curso** (`P.inRange(hoy)`) para mostrar "cerrarías en ~$X" = saldo del periodo + neto de esos recurrentes (ingresos suman, gastos restan). En periodos pasados/futuros no se muestra.
 - **Metas**: `goalSaved = goal.initial + suma de movimientos con goalId` (fuente única de verdad; borrar un aporte ajusta la meta sola).
 - `iconFor(cat, type, cats)` devuelve la **clave** de ícono (custom de la categoría → `ICONS[nombre]` → default). Se renderiza con `<Icon name={clave}/>` de `lib/icons.tsx` (SVG monocromo `currentColor`, estilo SF Symbols). NO se usan emoji en la UI.
 - `migrate()` en `lib/storage.ts` hace migración idempotente sin perder datos: **cualquier campo nuevo del modelo se inicializa AHÍ**.
 - `commit(fn)` en el store clona el estado, aplica cambios, hace bump de `updatedAt`, guarda en local y hace push con debounce a la nube.
 - Presupuestos y reportes son **mensuales**.
+- **"Disponible para gastar" (`budgetSummary` en `lib/calc.ts`)**: el `remaining` del encabezado suma TODAS las categorías presupuestadas, pero el **`perDay` se calcula solo sobre categorías variables** — excluye las cubiertas por un recurrente `out` activo (fijas, ya comprometidas: no son dinero repartible entre los días). Si no hay categorías fijas presupuestadas, `perDay` equivale al total/días (sin regresión) y la UI omite la coletilla "para el día a día" (bandera `hasFixed`).
 
 ## Backend (Supabase)
 - Las llaves van en `.env` (committed): `VITE_SUPABASE_URL` y `VITE_SUPABASE_ANON_KEY` (publishable key, **pública por diseño**; la seguridad la dan RLS + login). No la trates como secreto.
@@ -49,7 +51,7 @@ src/
 - Se trabaja desde 2 PCs (casa y trabajo): **SIEMPRE `git pull` antes de empezar y `git push` al terminar**. Push a `main` dispara el deploy solo.
 
 ## Features implementadas
-Captura rápida (teclado propio + chips de categoría con icono + recordar última cuenta/categoría + repetir último), cuentas con saldo, transferencias, presupuestos con alertas + "disponible para gastar", metas con aportes, pagos recurrentes (mensual/semanal) con "pagar" y próximos pagos, vista mes/semana, reportes (tendencia 6 meses, comparativa, resumen anual), búsqueda global, categorías personalizables (icono/edición/grupos propios), respaldo JSON export/import + recordatorio, tema claro/oscuro, PWA, deshacer en borrados.
+Captura rápida (teclado propio + chips de categoría con icono + recordar última cuenta/categoría + repetir último), cuentas con saldo, transferencias, presupuestos con alertas + "disponible para gastar" (con gasto-por-día que separa fijo de variable), metas con aportes, pagos recurrentes (mensual/semanal) con "pagar" y próximos pagos, proyección de cierre de periodo (saldo + recurrentes por venir), vista mes/semana, reportes (tendencia 6 meses, comparativa, resumen anual), búsqueda global, categorías personalizables (icono/edición/grupos propios), respaldo JSON export/import + recordatorio, tema claro/oscuro, PWA, deshacer en borrados.
 
 ## Backlog conocido
 - Notificaciones push de recordatorios (frágil en iOS PWA) — pendiente.
