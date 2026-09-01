@@ -4,7 +4,7 @@ import type { AppState, PeriodMode, Theme, ViewName } from './types'
 import { loadLocal, saveLocal } from './lib/storage'
 import { materializeRecurring } from './lib/recurring'
 import { CLOUD } from './lib/supabase'
-import { pushCloud, loadCloud, mergeStates } from './lib/sync'
+import { pushCloud, loadCloud, mergeStates, nextClock } from './lib/sync'
 import { THEME_KEY } from './lib/constants'
 
 export type SheetState =
@@ -135,7 +135,7 @@ export const useStore = create<Store>((set, get) => ({
   commit: (fn, opts) => {
     const d: AppState = structuredClone(get().data)
     fn(d)
-    d.updatedAt = Date.now()
+    d.updatedAt = nextClock(d.updatedAt)
     set({ data: d })
     saveLocal(d)
     schedulePush(get)
@@ -151,7 +151,7 @@ export const useStore = create<Store>((set, get) => ({
     const d: AppState = structuredClone(get().data)
     const added = materializeRecurring(d)
     if (added) {
-      d.updatedAt = Date.now()
+      d.updatedAt = nextClock(d.updatedAt)
       set({ data: d })
       saveLocal(d)
       schedulePush(get)

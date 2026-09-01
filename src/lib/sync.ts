@@ -5,6 +5,16 @@ import { supabase } from './supabase'
 const TABLE = 'user_data'
 const TOMB_TTL = 1000 * 60 * 60 * 24 * 150 // 150 días: vida de un tombstone antes de podarse
 
+/**
+ * Reloj lógico monótono (estilo Lamport) para `updatedAt`. Nunca retrocede respecto
+ * al último valor conocido: `max(ahora, prev + 1)`. Como `mergeStates` deja `prev` en
+ * `max(remote, local)` tras cada pull-merge, un commit posterior supera el timestamp del
+ * otro dispositivo aunque el reloj local vaya atrasado → su edición gana el last-write-wins.
+ */
+export function nextClock(prev: number): number {
+  return Math.max(Date.now(), (prev || 0) + 1)
+}
+
 function mergeTombstones(a?: Record<string, number>, b?: Record<string, number>): Record<string, number> {
   const out: Record<string, number> = { ...(a || {}) }
   for (const [id, ts] of Object.entries(b || {})) if (!out[id] || ts > out[id]) out[id] = ts

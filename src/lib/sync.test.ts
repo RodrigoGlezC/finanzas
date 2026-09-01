@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest'
-import { mergeStates } from './sync'
+import { mergeStates, nextClock } from './sync'
 import type { AppState, Movement } from '../types'
 
 function state(over: Partial<AppState>): AppState {
@@ -53,5 +53,23 @@ describe('mergeStates', () => {
   it('el updatedAt resultante es el máximo de ambos', () => {
     const r = mergeStates(state({ updatedAt: 5 }), state({ updatedAt: 9 }))
     expect(r.updatedAt).toBe(9)
+  })
+})
+
+describe('nextClock', () => {
+  it('con reloj normal usa la hora actual (nunca antes de "ahora")', () => {
+    const before = Date.now()
+    const r = nextClock(0)
+    expect(r).toBeGreaterThanOrEqual(before)
+  })
+
+  it('si el prev viene del futuro (reloj del otro PC adelantado), lo supera en +1', () => {
+    const future = Date.now() + 1_000_000
+    expect(nextClock(future)).toBe(future + 1)
+  })
+
+  it('es estrictamente monótono en commits dentro del mismo milisegundo', () => {
+    const t = nextClock(0)
+    expect(nextClock(t)).toBeGreaterThan(t)
   })
 })
