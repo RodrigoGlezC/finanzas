@@ -1,4 +1,5 @@
 import { useMemo, type ReactNode } from 'react'
+import { useCountUp } from '../lib/useCountUp'
 
 const F2 = new Intl.NumberFormat('es-MX', { style: 'currency', currency: 'MXN', minimumFractionDigits: 2, maximumFractionDigits: 2 })
 const F0 = new Intl.NumberFormat('es-MX', { style: 'currency', currency: 'MXN', minimumFractionDigits: 0, maximumFractionDigits: 0 })
@@ -7,14 +8,17 @@ const F0 = new Intl.NumberFormat('es-MX', { style: 'currency', currency: 'MXN', 
  * Cifra de dinero con jerarquía tipográfica fintech: el símbolo y los decimales
  * van subordinados (más tenues y pequeños) frente al entero. Tabular por defecto.
  * `decimals` muestra centavos atenuados (úsalo en el número principal).
+ * `animate` interpola el valor al cambiar (estilo Apple) — solo en cifras protagonistas.
  */
-export default function Money({ value, decimals = false, className }: {
+export default function Money({ value, decimals = false, className, animate = false }: {
   value: number
   decimals?: boolean
   className?: string
+  animate?: boolean
 }) {
+  const shown = useCountUp(value || 0, animate)
   const nodes = useMemo<ReactNode[]>(() => {
-    const parts = (decimals ? F2 : F0).formatToParts(value || 0)
+    const parts = (decimals ? F2 : F0).formatToParts(shown)
     const out: ReactNode[] = []
     let frac = ''
     parts.forEach((p, i) => {
@@ -24,7 +28,7 @@ export default function Money({ value, decimals = false, className }: {
     })
     if (frac) out.push(<span key="frac" className="m-frac">{frac}</span>)
     return out
-  }, [value, decimals])
+  }, [shown, decimals])
 
   return <span className={`money${className ? ' ' + className : ''}`}>{nodes}</span>
 }

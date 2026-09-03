@@ -88,7 +88,7 @@ export default function Inicio() {
         <div className="h-lead">
           <div>
             <div className="h-lab">{!mv.length ? 'Tu balance' : balance >= 0 ? 'Te sobran' : 'Te faltan'}</div>
-            <div className="h-amt tnum" style={{ color: balance >= 0 ? 'var(--label)' : 'var(--red-ink)' }}><Money value={Math.abs(balance)} decimals /></div>
+            <div className="h-amt tnum" style={{ color: balance >= 0 ? 'var(--label)' : 'var(--red-ink)' }}><Money value={Math.abs(balance)} decimals animate /></div>
           </div>
           {deltaPct !== null && (
             <span className={`h-delta ${deltaPct >= 0 ? 'up' : 'down'}`} aria-label={`${deltaPct >= 0 ? 'Subió' : 'Bajó'} ${Math.abs(deltaPct)}% vs. periodo anterior`}>
@@ -108,9 +108,9 @@ export default function Inicio() {
           {sp > 0 && <span style={{ width: sp + '%', background: 'var(--green)' }} />}
         </div>
         <div className="hstats">
-          <div className="hstat"><div className="s-top"><span className="dot" style={{ background: 'var(--green)' }} />Ingresos</div><div className="s-val tnum"><Money value={ingresos} /></div></div>
-          <div className="hstat"><div className="s-top"><span className="dot" style={{ background: 'var(--red)' }} />Gastos</div><div className="s-val tnum"><Money value={gastos} /></div></div>
-          <div className="hstat"><div className="s-top"><span className="dot" style={{ background: 'var(--s7)' }} />Ahorro</div><div className="s-val tnum"><Money value={ahorro} /></div></div>
+          <div className="hstat"><div className="s-top"><span className="dot" style={{ background: 'var(--green)' }} />Ingresos</div><div className="s-val tnum"><Money value={ingresos} animate /></div></div>
+          <div className="hstat"><div className="s-top"><span className="dot" style={{ background: 'var(--red)' }} />Gastos</div><div className="s-val tnum"><Money value={gastos} animate /></div></div>
+          <div className="hstat"><div className="s-top"><span className="dot" style={{ background: 'var(--s7)' }} />Ahorro</div><div className="s-val tnum"><Money value={ahorro} animate /></div></div>
         </div>
       </div>
 
@@ -132,7 +132,7 @@ export default function Inicio() {
             <IconSquare name="wallet" color={cssVar(avail.remaining >= 0 ? '--green' : '--red')} />
             <div className="av-main">
               <div className="av-lab">Te queda del presupuesto de {cap(anchor.toLocaleDateString('es-MX', { month: 'long' }))}</div>
-              <div className="av-val tnum" style={{ color: avail.remaining >= 0 ? 'var(--label)' : 'var(--red-ink)' }}><Money value={avail.remaining} /></div>
+              <div className="av-val tnum" style={{ color: avail.remaining >= 0 ? 'var(--label)' : 'var(--red-ink)' }}><Money value={avail.remaining} animate /></div>
               <div className="av-day">{
                 avail.perDay > 0
                   ? `~${money(avail.perDay)} por día${avail.hasFixed ? ' para el día a día' : ''} los próximos ${avail.daysLeft} días`
