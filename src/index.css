@@ -226,6 +226,9 @@
   @media(min-width:600px){.sheet.show{transform:translateX(-50%) translateY(-50%) scale(1);opacity:1}}
   .grabber{width:36px;height:5px;border-radius:var(--r-pill);background:var(--label-3);margin:8px auto 4px}
   @media(min-width:600px){.grabber{display:none}}
+  /* Zona de arrastre del sheet (grabber + cabecera): captura el gesto vertical sin scrollear el fondo */
+  .sheet-grab{touch-action:none}
+  @media(min-width:600px){.sheet-grab{touch-action:auto}}
   .sheet-head{display:flex;align-items:center;justify-content:space-between;padding:8px 16px 4px}
   .sheet-head .t{font-size:17px;font-weight:600}
   .sheet-head .save{font-weight:600}
