@@ -43,10 +43,15 @@
   .money .m-frac{opacity:.6;font-size:.62em;font-weight:inherit}
   button{font-family:inherit;letter-spacing:inherit}
 
-  /* NAV */
-  .nav{position:sticky;top:0;z-index:40;background:var(--nav-bg);-webkit-backdrop-filter:saturate(180%) blur(20px);backdrop-filter:saturate(180%) blur(20px);border-bottom:.5px solid var(--sep);padding:max(10px,env(safe-area-inset-top)) 16px 10px}
+  /* NAV · scroll edge: transparente arriba del todo, gana material (blur+hairline) al scrollear */
+  .nav{position:sticky;top:0;z-index:40;background:transparent;border-bottom:.5px solid transparent;padding:max(10px,env(safe-area-inset-top)) 16px 10px;transition:background .25s ease,border-color .25s ease,-webkit-backdrop-filter .25s ease,backdrop-filter .25s ease}
+  .nav.scrolled{background:var(--nav-bg);-webkit-backdrop-filter:saturate(180%) blur(20px);backdrop-filter:saturate(180%) blur(20px);border-bottom-color:var(--sep)}
+  @media(prefers-reduced-motion:reduce){.nav{transition:none}}
   .nav-row{display:flex;align-items:center;gap:8px;max-width:720px;margin:0 auto}
   .nav-title{font-size:22px;font-weight:700;letter-spacing:-.02em}
+  /* Large title (iOS): grande en flujo, se desliza bajo el bar; el compacto entra por crossfade */
+  .nav-large{max-width:720px;margin:0 auto;padding:0 16px 6px}
+  .nav-large h1{margin:0;font-size:34px;font-weight:700;letter-spacing:-.028em;line-height:1.12}
   .grow{flex:1}
   .stepper{display:inline-flex;align-items:center;gap:2px;background:var(--fill);border-radius:var(--r-pill);padding:3px}
   .stepper button{border:none;background:transparent;color:var(--tint);cursor:pointer;width:28px;height:28px;border-radius:var(--r-pill);font-size:18px;font-weight:600;display:grid;place-items:center}
