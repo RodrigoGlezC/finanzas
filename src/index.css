@@ -11,6 +11,7 @@
     --s1:#2a78d6;--s2:#eb6834;--s3:#1baf7a;--s4:#eda100;--s5:#e87ba4;--s6:#008300;--s7:#4a3aa7;--s8:#e34948;
     --shadow-card:0 1px 2px rgba(0,0,0,.04); --shadow-sheet:0 -10px 40px rgba(0,0,0,.18);
     --ease-ios:cubic-bezier(.32,.72,0,1); /* resorte de UIKit: settle firme al soltar */
+    --sk-shine:rgba(255,255,255,.55); /* brillo del shimmer de skeletons */
     /* Escala de radios (D1) */
     --r-xs:8px; --r-sm:10px; --r-ctrl:12px; --r-md:14px; --r-tile:16px; --r-card:18px; --r-lg:22px; --r-xl:26px; --r-pill:999px;
     /* Escala de espaciado, base 4 (D2) */
@@ -29,7 +30,7 @@
     --orange:#ff9f0a; --orange-ink:#ff9f0a; --yellow:#ffd60a;
     --nav-bg:rgba(20,20,22,.8); --tabbar-bg:rgba(20,20,22,.9); --thumb:#636366;
     --s1:#3987e5;--s2:#d95926;--s3:#199e70;--s4:#c98500;--s5:#d55181;--s6:#008300;--s7:#9085e9;--s8:#e66767;
-    --shadow-card:none;
+    --shadow-card:none; --sk-shine:rgba(255,255,255,.06);
   }
   *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
   html,body{margin:0;padding:0}
@@ -100,6 +101,12 @@
   .card-h{display:flex;align-items:baseline;justify-content:space-between;gap:10px;padding:16px 18px 6px}
   .card-h h3{margin:0;font-size:17px;font-weight:600;letter-spacing:-.02em}
   .card-h .sub{font-size:13px;color:var(--label-2);font-weight:500}
+
+  /* Skeletons · shimmer para la carga inicial de la nube */
+  .sk{position:relative;overflow:hidden;background:var(--fill);border-radius:6px}
+  .sk::after{content:"";position:absolute;inset:0;transform:translateX(-100%);background:linear-gradient(90deg,transparent,var(--sk-shine),transparent);animation:sk-shimmer 1.4s ease-in-out infinite}
+  @keyframes sk-shimmer{100%{transform:translateX(100%)}}
+  @media(prefers-reduced-motion:reduce){.sk::after{animation:none}}
 
   /* filas */
   .row{display:grid;grid-template-columns:auto 1fr auto;align-items:center;gap:12px;padding:11px 16px;position:relative;min-height:56px;transition:background .12s}

@@ -9,6 +9,7 @@ import TabBar from './components/TabBar'
 import Toast from './components/Toast'
 import BackupBanner from './components/BackupBanner'
 import Login from './components/Login'
+import HomeSkeleton from './components/Skeleton'
 import Sheets from './components/Sheets'
 import ConfirmDialog from './components/ConfirmDialog'
 import QuickAdd from './components/QuickAdd'
@@ -21,6 +22,8 @@ import Ajustes from './views/Ajustes'
 export default function App() {
   const theme = useStore((s) => s.theme)
   const view = useStore((s) => s.view)
+  const data = useStore((s) => s.data)
+  const cloudStatus = useStore((s) => s.cloudStatus)
   const session = useStore((s) => s.session)
   const setSession = useStore((s) => s.setSession)
   const setCloudStatus = useStore((s) => s.setCloudStatus)
@@ -117,18 +120,26 @@ export default function App() {
   if (!ready) return null
   if (CLOUD && !session) return <Login />
 
+  // Primer sync en un dispositivo nuevo: logueado, la nube aún no respondió (cloudStatus '')
+  // y no hay datos locales. Mostramos skeletons en vez de estados vacíos que se llenarán solos.
+  const loadingCloud = CLOUD && !!session && cloudStatus === '' && !data.movements?.length && !data.accounts?.length
+
   return (
     <>
       <Nav />
       <div className="wrap">
-        <BackupBanner />
-        <div className="view-fade" key={view}>
-          {view === 'inicio' && <Inicio />}
-          {view === 'movimientos' && <Movimientos />}
-          {view === 'presupuestos' && <Presupuestos />}
-          {view === 'reportes' && <Reportes />}
-          {view === 'ajustes' && <Ajustes />}
-        </div>
+        {loadingCloud ? <HomeSkeleton /> : (
+          <>
+            <BackupBanner />
+            <div className="view-fade" key={view}>
+              {view === 'inicio' && <Inicio />}
+              {view === 'movimientos' && <Movimientos />}
+              {view === 'presupuestos' && <Presupuestos />}
+              {view === 'reportes' && <Reportes />}
+              {view === 'ajustes' && <Ajustes />}
+            </div>
+          </>
+        )}
       </div>
       <TabBar />
       <QuickAdd />
