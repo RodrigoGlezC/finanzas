@@ -54,6 +54,13 @@ describe('mergeStates', () => {
     const r = mergeStates(state({ updatedAt: 5 }), state({ updatedAt: 9 }))
     expect(r.updatedAt).toBe(9)
   })
+
+  it('acota un reloj remoto absurdamente adelantado (no envenena el reloj lógico)', () => {
+    const poisoned = Date.now() + 1000 * 60 * 60 * 24 * 365 * 4 // ~4 años en el futuro (reloj mal puesto)
+    const r = mergeStates(state({ updatedAt: poisoned }), state({ updatedAt: 5 }))
+    expect(r.updatedAt).toBeLessThanOrEqual(Date.now() + 1000 * 60 * 60 * 24) // clamped a ≤ ahora+24h
+    expect(r.updatedAt).toBeGreaterThan(5) // pero sigue contando como "más nuevo"
+  })
 })
 
 describe('nextClock', () => {

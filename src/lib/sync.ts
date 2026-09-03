@@ -4,6 +4,18 @@ import { supabase } from './supabase'
 
 const TABLE = 'user_data'
 const TOMB_TTL = 1000 * 60 * 60 * 24 * 150 // 150 días: vida de un tombstone antes de podarse
+const MAX_SKEW = 1000 * 60 * 60 * 24 // 24h: cota de cordura para el reloj lógico
+
+/**
+ * Acota un `updatedAt` a `ahora + MAX_SKEW`. Un timestamp más adelantado que eso respecto a
+ * la hora real es casi con seguridad un reloj mal puesto (RTC muerto, fecha cambiada a mano):
+ * si lo absorbiéramos, `nextClock` (`max(now, prev+1)`) lo fijaría de forma permanente en TODOS
+ * los dispositivos que sincronicen después, rompiendo el last-write-wins hasta que el tiempo real
+ * lo alcanzara. Al no absorberlo, un dispositivo sano nunca se envenena por un peer con mal reloj.
+ */
+function sane(t: number): number {
+  return Math.min(t || 0, Date.now() + MAX_SKEW)
+}
 
 /**
  * Reloj lógico monótono (estilo Lamport) para `updatedAt`. Nunca retrocede respecto
@@ -48,7 +60,7 @@ export function mergeStates(remote: AppState, local: AppState): AppState {
     ...newer,
     movements,
     deleted,
-    updatedAt: Math.max(remote.updatedAt || 0, local.updatedAt || 0),
+    updatedAt: sane(Math.max(remote.updatedAt || 0, local.updatedAt || 0)),
   }
 }
 
@@ -57,7 +69,9 @@ export async function pushCloud(userId: string, data: AppState): Promise<void> {
   const { error } = await supabase.from(TABLE).upsert({
     user_id: userId,
     data,
-    updated_at: new Date(data.updatedAt || Date.now()).toISOString(),
+    // Reflejar fielmente data.updatedAt (jsonb); un updatedAt legítimo de 0 (estado recién
+    // migrado) no es "ausente", así que no lo sustituimos por la hora actual.
+    updated_at: new Date(typeof data.updatedAt === 'number' ? data.updatedAt : Date.now()).toISOString(),
   })
   if (error) throw error
 }
