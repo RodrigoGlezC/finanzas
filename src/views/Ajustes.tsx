@@ -8,6 +8,7 @@ import { STORE_KEY } from '../lib/constants'
 import { IconSquare } from '../components/ui'
 import { Icon } from '../lib/icons'
 import { clearAll, exportCsv, exportJson, importJson, loadExample } from '../lib/dataOps'
+import { importXlsx } from '../lib/importXlsx'
 
 export default function Ajustes() {
   const data = useStore((s) => s.data)
@@ -15,6 +16,7 @@ export default function Ajustes() {
   const cloudStatus = useStore((s) => s.cloudStatus)
   const openSheet = useStore((s) => s.openSheet)
   const fileRef = useRef<HTMLInputElement>(null)
+  const xlsxRef = useRef<HTMLInputElement>(null)
 
   async function logout() {
     try { await supabase?.auth.signOut() } catch { /* ignore */ }
@@ -100,6 +102,7 @@ export default function Ajustes() {
       <div className="card">
         <div className="row tappable" onClick={exportJson}><span className="ic" style={{ background: 'var(--fill)', color: 'var(--label-2)' }}><Icon name="download" /></span><div className="r-main"><div className="r-title">Exportar respaldo (JSON)</div><div className="r-sub">Guarda una copia de todo</div></div><span className="chev"><Icon name="chevron" /></span></div>
         <div className="row tappable" onClick={() => fileRef.current?.click()}><span className="ic" style={{ background: 'var(--fill)', color: 'var(--label-2)' }}><Icon name="upload" /></span><div className="r-main"><div className="r-title">Importar respaldo</div><div className="r-sub">Restaura desde un archivo</div></div><span className="chev"><Icon name="chevron" /></span></div>
+        <div className="row tappable" onClick={() => xlsxRef.current?.click()}><span className="ic" style={{ background: 'var(--fill)', color: 'var(--tint)' }}><Icon name="receipt" /></span><div className="r-main"><div className="r-title">Importar desde Excel</div><div className="r-sub">Tu hoja de gastos semanales (.xlsx)</div></div><span className="chev"><Icon name="chevron" /></span></div>
         <div className="row tappable" onClick={exportCsv}><span className="ic" style={{ background: 'var(--fill)', color: 'var(--label-2)' }}><Icon name="file" /></span><div className="r-main"><div className="r-title">Exportar periodo a CSV</div></div><span className="chev"><Icon name="chevron" /></span></div>
         <div className="row tappable" onClick={loadExample}><span className="ic" style={{ background: 'var(--fill)', color: 'var(--tint)' }}><Icon name="sparkle" /></span><div className="r-main"><div className="r-title">Cargar datos de ejemplo</div></div><span className="chev"><Icon name="chevron" /></span></div>
         <div className="row tappable" onClick={clearAll}><span className="ic" style={{ background: tint(cssVar('--red'), 15), color: 'var(--red)' }}><Icon name="trash" /></span><div className="r-main"><div className="r-title" style={{ color: 'var(--red)' }}>Borrar todos los datos</div></div><span className="chev"><Icon name="chevron" /></span></div>
@@ -108,6 +111,8 @@ export default function Ajustes() {
 
       <input ref={fileRef} type="file" accept="application/json" style={{ display: 'none' }}
         onChange={(e) => { const f = e.target.files?.[0]; if (f) importJson(f); e.target.value = '' }} />
+      <input ref={xlsxRef} type="file" accept=".xlsx,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" style={{ display: 'none' }}
+        onChange={(e) => { const f = e.target.files?.[0]; if (f) importXlsx(f); e.target.value = '' }} />
     </>
   )
 }

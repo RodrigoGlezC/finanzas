@@ -10,6 +10,10 @@ export default defineConfig({
     VitePWA({
       registerType: 'autoUpdate',
       includeAssets: ['icon-180.png'],
+      // xlsx (SheetJS) es un chunk pesado de carga diferida, solo se usa al importar Excel.
+      // Se excluye del precache para no engordar la instalación de TODOS los usuarios; se
+      // descarga por red la primera vez que alguien importa (acción puntual, online).
+      workbox: { globIgnores: ['**/xlsx-*.js'] },
       manifest: {
         name: 'Finanzas',
         short_name: 'Finanzas',
